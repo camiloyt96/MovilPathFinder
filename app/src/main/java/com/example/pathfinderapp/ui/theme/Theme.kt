@@ -9,35 +9,86 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
+// Colores personalizados para Pathfinder - Modo Oscuro
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Color(0xFF9C27B0),        // Púrpura místico
+    onPrimary = Color(0xFFFFFFFF),      // Blanco para texto sobre primary
+    primaryContainer = Color(0xFF4A148C), // Púrpura más oscuro
+    onPrimaryContainer = Color(0xFFE1BEE7),
+
+    secondary = Color(0xFFFFB74D),      // Dorado/Naranja cálido
+    onSecondary = Color(0xFF000000),
+    secondaryContainer = Color(0xFFE65100),
+    onSecondaryContainer = Color(0xFFFFE0B2),
+
+    tertiary = Color(0xFF4CAF50),       // Verde naturaleza
+    onTertiary = Color(0xFF000000),
+    tertiaryContainer = Color(0xFF1B5E20),
+    onTertiaryContainer = Color(0xFFC8E6C9),
+
+    background = Color(0xFF121212),     // Negro profundo
+    onBackground = Color(0xFFE0E0E0),
+
+    surface = Color(0xFF1E1E1E),        // Superficie oscura
+    onSurface = Color(0xFFE0E0E0),
+    surfaceVariant = Color(0xFF2C2C2C),
+    onSurfaceVariant = Color(0xFFBDBDBD),
+
+    error = Color(0xFFCF6679),
+    onError = Color(0xFF000000),
+    errorContainer = Color(0xFFB00020),
+    onErrorContainer = Color(0xFFFFDAD6),
+
+    outline = Color(0xFF9E9E9E),
+    outlineVariant = Color(0xFF424242)
 )
 
+// Colores personalizados para Pathfinder - Modo Claro
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = Color(0xFF6200EE),        // Púrpura vibrante
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFBB86FC),
+    onPrimaryContainer = Color(0xFF3700B3),
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
+    secondary = Color(0xFFFF6F00),      // Naranja/Dorado
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFFFB74D),
+    onSecondaryContainer = Color(0xFFE65100),
+
+    tertiary = Color(0xFF388E3C),       // Verde bosque
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFF81C784),
+    onTertiaryContainer = Color(0xFF1B5E20),
+
+    background = Color(0xFFFFFBFE),     // Blanco parchment
     onBackground = Color(0xFF1C1B1F),
+
+    surface = Color(0xFFFFFFFF),        // Blanco puro
     onSurface = Color(0xFF1C1B1F),
-    */
+    surfaceVariant = Color(0xFFF5F5F5),
+    onSurfaceVariant = Color(0xFF424242),
+
+    error = Color(0xFFB00020),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFCD8DF),
+    onErrorContainer = Color(0xFF410002),
+
+    outline = Color(0xFF757575),
+    outlineVariant = Color(0xFFE0E0E0)
 )
 
 @Composable
 fun PathfinderAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Cambiado a false para usar nuestros colores personalizados
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -48,6 +99,15 @@ fun PathfinderAppTheme(
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     MaterialTheme(

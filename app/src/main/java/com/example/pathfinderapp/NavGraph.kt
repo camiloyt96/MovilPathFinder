@@ -27,5 +27,8 @@ fun NavGraph(navController: NavHostController) {
         composable(route = Screen.Menu.route) {
             MenuScreen()
         }
+        composable(route = Screen.Bestiary.route) {
+            BestiaryScreen()
+        }
     }
 }
