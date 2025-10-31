@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BestiaryScreen() {
@@ -27,5 +28,13 @@ fun BestiaryScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "En proceso...")
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BestiaryScreenPreview() {
+    MaterialTheme {
+        BestiaryScreen()
     }
 }

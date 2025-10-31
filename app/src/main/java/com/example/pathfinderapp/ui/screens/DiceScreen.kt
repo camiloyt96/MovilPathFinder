@@ -4,6 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.*
@@ -20,9 +21,21 @@ import androidx.compose.ui.unit.sp
 import kotlin.random.Random
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
+
+enum class DiceType(val sides: Int, val label: String) {
+    D4(4, "D4"),
+    D6(6, "D6"),
+    D8(8, "D8"),
+    D10(10, "D10"),
+    D12(12, "D12"),
+    D20(20, "D20"),
+    D100(100, "D100")
+}
 
 @Composable
 fun DiceScreen() {
+    var selectedDice by remember { mutableStateOf(DiceType.D20) }
     var diceValue by remember { mutableStateOf(20) }
     var isRolling by remember { mutableStateOf(false) }
     var rollHistory by remember { mutableStateOf(listOf<Int>()) }
@@ -43,7 +56,7 @@ fun DiceScreen() {
                     delay(100)
                 }
 
-                val newValue = Random.nextInt(1, 21)
+                val newValue = Random.nextInt(1, selectedDice.sides + 1)
                 diceValue = newValue
                 rollHistory = (listOf(newValue) + rollHistory).take(10)
 
@@ -66,11 +79,88 @@ fun DiceScreen() {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Dado D20",
+                text = "Dado ${selectedDice.label}",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = "Selecciona el dado",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            listOf(DiceType.D4, DiceType.D6, DiceType.D8, DiceType.D10).forEach { dice ->
+                                FilterChip(
+                                    selected = selectedDice == dice,
+                                    onClick = {
+                                        if (!isRolling) {
+                                            selectedDice = dice
+                                            rollHistory = listOf()
+                                            diceValue = dice.sides
+                                        }
+                                    },
+                                    label = {
+                                        Text(
+                                            text = dice.label,
+                                            fontSize = 12.sp,
+                                            fontWeight = if (selectedDice == dice) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    modifier = Modifier.padding(horizontal = 2.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            listOf(DiceType.D12, DiceType.D20, DiceType.D100).forEach { dice ->
+                                FilterChip(
+                                    selected = selectedDice == dice,
+                                    onClick = {
+                                        if (!isRolling) {
+                                            selectedDice = dice
+                                            rollHistory = listOf()
+                                            diceValue = dice.sides
+                                        }
+                                    },
+                                    label = {
+                                        Text(
+                                            text = dice.label,
+                                            fontSize = 12.sp,
+                                            fontWeight = if (selectedDice == dice) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    modifier = Modifier.padding(horizontal = 2.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,8 +175,8 @@ fun DiceScreen() {
                         .background(
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    getDiceColor(diceValue),
-                                    getDiceColor(diceValue).copy(alpha = 0.7f)
+                                    getDiceColor(diceValue, selectedDice.sides),
+                                    getDiceColor(diceValue, selectedDice.sides).copy(alpha = 0.7f)
                                 )
                             ),
                             shape = CircleShape
@@ -95,7 +185,7 @@ fun DiceScreen() {
                 ) {
                     Text(
                         text = if (isRolling) "?" else diceValue.toString(),
-                        fontSize = 80.sp,
+                        fontSize = if (diceValue >= 100) 60.sp else 80.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -106,12 +196,12 @@ fun DiceScreen() {
                 if (!isRolling && diceValue > 0) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = getResultColor(diceValue)
+                            containerColor = getResultColor(diceValue, selectedDice.sides)
                         ),
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = getResultMessage(diceValue),
+                            text = getResultMessage(diceValue, selectedDice.sides),
                             modifier = Modifier.padding(16.dp),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
@@ -119,6 +209,12 @@ fun DiceScreen() {
                     }
                 }
             }
+            Text(
+                text = "Puedes agitar para lanzar el dado",
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(6.dp))
 
             Button(
                 onClick = rollDice,
@@ -137,7 +233,7 @@ fun DiceScreen() {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (isRolling) "Tirando..." else "Tirar D20",
+                    text = if (isRolling) "Tirando..." else "Tirar ${selectedDice.label}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -176,6 +272,10 @@ fun DiceScreen() {
                                 text = "Total: ${rollHistory.size} tiradas",
                                 style = MaterialTheme.typography.bodySmall
                             )
+                            Text(
+                                text = "Promedio: ${rollHistory.average().toInt()}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }
@@ -185,36 +285,44 @@ fun DiceScreen() {
 }
 
 @Composable
-fun getDiceColor(value: Int): Color {
-    return when (value) {
-        20 -> Color(0xFF4CAF50)
-        1 -> Color(0xFFE53935)
-        in 15..19 -> Color(0xFF2196F3)
-        in 2..5 -> Color(0xFFFF9800)
+fun getDiceColor(value: Int, maxValue: Int): Color {
+    return when {
+        value == maxValue -> Color(0xFF4CAF50)
+        value == 1 -> Color(0xFFE53935)
+        value >= (maxValue * 0.75).toInt() -> Color(0xFF2196F3)
+        value <= (maxValue * 0.25).toInt() -> Color(0xFFFF9800)
         else -> MaterialTheme.colorScheme.primary
     }
 }
 
 @Composable
-fun getResultColor(value: Int): Color {
-    return when (value) {
-        20 -> Color(0xFF4CAF50).copy(alpha = 0.3f)
-        1 -> Color(0xFFE53935).copy(alpha = 0.3f)
-        in 15..19 -> Color(0xFF2196F3).copy(alpha = 0.3f)
-        in 2..5 -> Color(0xFFFF9800).copy(alpha = 0.3f)
+fun getResultColor(value: Int, maxValue: Int): Color {
+    return when {
+        value == maxValue -> Color(0xFF4CAF50).copy(alpha = 0.3f)
+        value == 1 -> Color(0xFFE53935).copy(alpha = 0.3f)
+        value >= (maxValue * 0.75).toInt() -> Color(0xFF2196F3).copy(alpha = 0.3f)
+        value <= (maxValue * 0.25).toInt() -> Color(0xFFFF9800).copy(alpha = 0.3f)
         else -> MaterialTheme.colorScheme.primaryContainer
     }
 }
 
-fun getResultMessage(value: Int): String {
-    return when (value) {
-        20 -> " ¡CRÍTICO PERFECTO! "
-        1 -> " ¡FALLO CRÍTICO! "
-        in 18..19 -> "¡Excelente tirada!"
-        in 15..17 -> "¡Muy buena tirada!"
-        in 11..14 -> "Tirada decente"
-        in 6..10 -> "Tirada regular"
-        in 2..5 -> "Tirada baja..."
+fun getResultMessage(value: Int, maxValue: Int): String {
+    return when {
+        value == maxValue -> "🎉 ¡CRÍTICO PERFECTO! 🎉"
+        value == 1 -> "💀 ¡FALLO CRÍTICO! 💀"
+        value >= (maxValue * 0.9).toInt() -> "⭐ ¡Excelente tirada!"
+        value >= (maxValue * 0.75).toInt() -> "✨ ¡Muy buena tirada!"
+        value >= (maxValue * 0.5).toInt() -> "👍 Tirada decente"
+        value >= (maxValue * 0.3).toInt() -> "😐 Tirada regular"
+        value <= (maxValue * 0.25).toInt() -> "😞 Tirada baja..."
         else -> "Resultado: $value"
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DiceScreenPreview() {
+    MaterialTheme {
+        DiceScreen()
     }
 }
