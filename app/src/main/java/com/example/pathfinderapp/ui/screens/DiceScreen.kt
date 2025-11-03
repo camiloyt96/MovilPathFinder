@@ -35,7 +35,7 @@ enum class DiceType(val sides: Int, val label: String) {
 
 @Composable
 fun DiceScreen() {
-    var selectedDice by remember { mutableStateOf(DiceType.D20) }
+    var selectedDice by remember { mutableStateOf(DiceType.D4) }
     var diceValue by remember { mutableStateOf(20) }
     var isRolling by remember { mutableStateOf(false) }
     var rollHistory by remember { mutableStateOf(listOf<Int>()) }
@@ -122,10 +122,14 @@ fun DiceScreen() {
                                     label = {
                                         Text(
                                             text = dice.label,
-                                            fontSize = 12.sp,
+                                            fontSize = 25.sp,
                                             fontWeight = if (selectedDice == dice) FontWeight.Bold else FontWeight.Normal
                                         )
                                     },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
                                     modifier = Modifier.padding(horizontal = 2.dp)
                                 )
                             }
@@ -150,10 +154,14 @@ fun DiceScreen() {
                                     label = {
                                         Text(
                                             text = dice.label,
-                                            fontSize = 12.sp,
+                                            fontSize = 25.sp,
                                             fontWeight = if (selectedDice == dice) FontWeight.Bold else FontWeight.Normal
                                         )
                                     },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
                                     modifier = Modifier.padding(horizontal = 2.dp)
                                 )
                             }
@@ -308,13 +316,13 @@ fun getResultColor(value: Int, maxValue: Int): Color {
 
 fun getResultMessage(value: Int, maxValue: Int): String {
     return when {
-        value == maxValue -> "🎉 ¡CRÍTICO PERFECTO! 🎉"
-        value == 1 -> "💀 ¡FALLO CRÍTICO! 💀"
-        value >= (maxValue * 0.9).toInt() -> "⭐ ¡Excelente tirada!"
-        value >= (maxValue * 0.75).toInt() -> "✨ ¡Muy buena tirada!"
-        value >= (maxValue * 0.5).toInt() -> "👍 Tirada decente"
-        value >= (maxValue * 0.3).toInt() -> "😐 Tirada regular"
-        value <= (maxValue * 0.25).toInt() -> "😞 Tirada baja..."
+        value == maxValue -> " ¡CRÍTICO PERFECTO! "
+        value == 1 -> " ¡FALLO CRÍTICO! "
+        value >= (maxValue * 0.9).toInt() -> " ¡Excelente tirada!"
+        value >= (maxValue * 0.75).toInt() -> " ¡Muy buena tirada!"
+        value >= (maxValue * 0.5).toInt() -> " Tirada decente"
+        value >= (maxValue * 0.3).toInt() -> " Tirada regular"
+        value <= (maxValue * 0.25).toInt() -> " Tirada baja..."
         else -> "Resultado: $value"
     }
 }
