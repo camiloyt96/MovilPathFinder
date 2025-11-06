@@ -30,17 +30,25 @@ fun WikiScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+<<<<<<< HEAD
     // Colores temáticos púrpura/rosa
     val primaryColor = Color(0xFF9C27B0)
     val secondaryColor = Color(0xFFE91E63)
 
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Wiki de Hechizos", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
+<<<<<<< HEAD
                     containerColor = primaryColor,
                     titleContentColor = Color.White
+=======
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             )
         }
@@ -49,7 +57,11 @@ fun WikiScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+<<<<<<< HEAD
                 .background(Color(0xFFF3E5F5))
+=======
+                .background(MaterialTheme.colorScheme.background)
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
         ) {
             // Barra de búsqueda
             OutlinedTextField(
@@ -70,7 +82,11 @@ fun WikiScreen(
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
+<<<<<<< HEAD
                     focusedBorderColor = primaryColor,
+=======
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                     unfocusedBorderColor = Color.Gray
                 )
             )
@@ -79,7 +95,10 @@ fun WikiScreen(
             SpellLevelFilters(
                 selectedLevel = uiState.selectedLevel,
                 onLevelSelected = { viewModel.filterByLevel(it) },
+<<<<<<< HEAD
                 primaryColor = primaryColor
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
             )
 
             // Contenido
@@ -88,7 +107,11 @@ fun WikiScreen(
                     uiState.isLoading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),
+<<<<<<< HEAD
                             color = primaryColor
+=======
+                            color = MaterialTheme.colorScheme.primary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                         )
                     }
 
@@ -104,7 +127,10 @@ fun WikiScreen(
                         SpellDetailView(
                             spell = uiState.selectedSpell!!,
                             onClose = { viewModel.clearSelectedSpell() },
+<<<<<<< HEAD
                             primaryColor = primaryColor
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                         )
                     }
 
@@ -112,8 +138,11 @@ fun WikiScreen(
                         SpellList(
                             spells = uiState.filteredSpells,
                             onSpellClick = { viewModel.loadSpellDetail(it.index) },
+<<<<<<< HEAD
                             primaryColor = primaryColor,
                             secondaryColor = secondaryColor
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                         )
                     }
                 }
@@ -126,7 +155,10 @@ fun WikiScreen(
 fun SpellLevelFilters(
     selectedLevel: Int?,
     onLevelSelected: (Int?) -> Unit,
+<<<<<<< HEAD
     primaryColor: Color
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
 ) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
@@ -140,8 +172,13 @@ fun SpellLevelFilters(
                 onClick = { onLevelSelected(null) },
                 label = { Text("Todos") },
                 colors = FilterChipDefaults.filterChipColors(
+<<<<<<< HEAD
                     selectedContainerColor = primaryColor,
                     selectedLabelColor = Color.White
+=======
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             )
         }
@@ -153,8 +190,13 @@ fun SpellLevelFilters(
                 onClick = { onLevelSelected(0) },
                 label = { Text("Cantrips") },
                 colors = FilterChipDefaults.filterChipColors(
+<<<<<<< HEAD
                     selectedContainerColor = primaryColor,
                     selectedLabelColor = Color.White
+=======
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             )
         }
@@ -166,8 +208,13 @@ fun SpellLevelFilters(
                 onClick = { onLevelSelected(level) },
                 label = { Text("Nivel $level") },
                 colors = FilterChipDefaults.filterChipColors(
+<<<<<<< HEAD
                     selectedContainerColor = primaryColor,
                     selectedLabelColor = Color.White
+=======
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             )
         }
@@ -180,8 +227,11 @@ fun SpellLevelFilters(
 fun SpellList(
     spells: List<com.example.pathfinderapp.data.models.Spell>,
     onSpellClick: (com.example.pathfinderapp.data.models.Spell) -> Unit,
+<<<<<<< HEAD
     primaryColor: Color,
     secondaryColor: Color
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -196,7 +246,11 @@ fun SpellList(
                 shape = RoundedCornerShape(12.dp),
                 elevation = CardDefaults.cardElevation(4.dp),
                 colors = CardDefaults.cardColors(
+<<<<<<< HEAD
                     containerColor = Color.White
+=======
+                    containerColor = MaterialTheme.colorScheme.surface
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             ) {
                 Row(
@@ -204,7 +258,11 @@ fun SpellList(
                         .fillMaxWidth()
                         .background(
                             Brush.horizontalGradient(
+<<<<<<< HEAD
                                 colors = listOf(primaryColor.copy(alpha = 0.1f), Color.White)
+=======
+                                colors = listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), MaterialTheme.colorScheme.surface)
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                             )
                         )
                         .padding(16.dp),
@@ -214,7 +272,11 @@ fun SpellList(
                         text = spell.name,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
+<<<<<<< HEAD
                         color = primaryColor
+=======
+                        color = MaterialTheme.colorScheme.primary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                     )
                 }
             }
@@ -227,7 +289,10 @@ fun SpellList(
 fun SpellDetailView(
     spell: SpellDetail,
     onClose: () -> Unit,
+<<<<<<< HEAD
     primaryColor: Color
+=======
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
 ) {
     Scaffold(
         topBar = {
@@ -235,12 +300,21 @@ fun SpellDetailView(
                 title = { Text(spell.name, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onClose) {
+<<<<<<< HEAD
                         Icon(Icons.Default.Close, "Cerrar", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = primaryColor,
                     titleContentColor = Color.White
+=======
+                        Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             )
         }
@@ -249,7 +323,11 @@ fun SpellDetailView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+<<<<<<< HEAD
                 .background(Color(0xFFF3E5F5)),
+=======
+                .background(MaterialTheme.colorScheme.background),
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -357,14 +435,25 @@ fun SpellDetailCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
+<<<<<<< HEAD
         elevation = CardDefaults.cardElevation(4.dp)
+=======
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+<<<<<<< HEAD
                 color = Color(0xFF9C27B0),
+=======
+                color = MaterialTheme.colorScheme.primary,
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             content()

@@ -9,10 +9,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+<<<<<<< HEAD
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+=======
+import androidx.compose.material.icons.filled.*
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,7 +37,13 @@ import androidx.compose.ui.unit.dp
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onRegisterClick: () -> Unit = {},
+<<<<<<< HEAD
     onForgotPasswordClick: () -> Unit = {}
+=======
+    onForgotPasswordClick: () -> Unit = {},
+    isDarkMode: Boolean = false,
+    onThemeToggle: () -> Unit = {}
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -55,6 +65,18 @@ fun LoginScreen(
                 )
             )
     ) {
+<<<<<<< HEAD
+=======
+        IconButton(
+            onClick = onThemeToggle,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+        ) {
+
+        }
+
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
         Column(
             modifier = Modifier
                 .fillMaxSize()

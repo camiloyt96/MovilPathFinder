@@ -38,7 +38,13 @@ fun AppScaffold(
         // Solo Login/Register (sin drawer)
         UnauthenticatedScaffold(
             navController = navController,
+<<<<<<< HEAD
             authViewModel = authViewModel
+=======
+            authViewModel = authViewModel,
+            isDarkMode = isDarkMode,
+            onThemeToggle = onThemeToggle
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
         )
     }
 }
@@ -46,7 +52,13 @@ fun AppScaffold(
 @Composable
 fun UnauthenticatedScaffold(
     navController: NavHostController,
+<<<<<<< HEAD
     authViewModel: AuthViewModel
+=======
+    authViewModel: AuthViewModel,
+    isDarkMode: Boolean,
+    onThemeToggle: () -> Unit
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -54,7 +66,13 @@ fun UnauthenticatedScaffold(
     ) {
         NavGraph(
             navController = navController,
+<<<<<<< HEAD
             authViewModel = authViewModel
+=======
+            authViewModel = authViewModel,
+            isDarkMode = isDarkMode,
+            onThemeToggle = onThemeToggle
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
         )
     }
 }
@@ -140,7 +158,13 @@ fun AuthenticatedScaffold(
             Surface(modifier = Modifier.padding(paddingValues)) {
                 NavGraph(
                     navController = navController,
+<<<<<<< HEAD
                     authViewModel = authViewModel
+=======
+                    authViewModel = authViewModel,
+                    isDarkMode = isDarkMode,
+                    onThemeToggle = onThemeToggle
+>>>>>>> ac7f3c53888c40f5cbb7cc2976737976f9aaba88
                 )
             }
         }
