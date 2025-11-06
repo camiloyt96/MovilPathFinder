@@ -35,8 +35,12 @@ fun NavGraph(
 
         composable(Screen.Register.route) {
             RegisterScreen(
-                onRegisterClick = { username, email, password, confirmPassword ->
-                    authViewModel.register(username, email, password, confirmPassword)
+                onRegisterSuccess = {
+                    // Navega al Home o Login después del registro exitoso
+                    navController.navigate(Screen.Home.route) {
+                        // Limpia el stack para que no pueda volver atrás
+                        popUpTo(Screen.Login.route) { inclusive = false }
+                    }
                 },
                 onBackToLoginClick = {
                     navController.popBackStack()

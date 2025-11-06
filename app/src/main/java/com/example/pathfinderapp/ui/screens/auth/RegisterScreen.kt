@@ -1,5 +1,8 @@
+// ui/screens/auth/RegisterScreen.kt (modificado)
+
 package com.example.pathfinderapp.ui.screens.auth
 
+import kotlin.reflect.KClass // ¡Añade esta importación para KClass!
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,31 +29,55 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel // Importa esto
 
+// Importa tu AuthRepository y FirebaseAppAuthRepository
+import com.example.pathfinderapp.data.repository.FirebaseAppAuthRepository
+import com.example.pathfinderapp.data.repository.AuthRepository
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 @Composable
 fun RegisterScreen(
-    onRegisterClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },
-    onBackToLoginClick: () -> Unit = {}
+    // onRegisterClick ahora solo notifica un éxito, el ViewModel maneja la lógica
+    onRegisterSuccess: () -> Unit = {},
+    onBackToLoginClick: () -> Unit = {},
+    // Inyecta el ViewModel usando viewModel() para que el sistema lo maneje
+    viewModel: RegisterViewModel = viewModel(factory = RegisterViewModelFactory(FirebaseAppAuthRepository()))
 ) {
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    // Observar los estados del ViewModel
+    val username by viewModel.username.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val confirmPassword by viewModel.confirmPassword.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val registrationSuccess by viewModel.registrationSuccess.collectAsState()
+
+    // Estados de UI locales
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var acceptTerms by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val focusManager = LocalFocusManager.current
 
-    // Validation states
+    // Validation states (ahora usamos los valores del ViewModel)
     val isUsernameValid = username.length >= 3
     val isEmailValid = email.contains("@") && email.contains(".")
     val isPasswordValid = password.length >= 6
     val doPasswordsMatch = password == confirmPassword && password.isNotBlank()
+    // La validación final para el botón también incluye los términos
     val isFormValid = isUsernameValid && isEmailValid && isPasswordValid &&
             doPasswordsMatch && acceptTerms
+
+    // Efecto para reaccionar al éxito del registro
+    LaunchedEffect(registrationSuccess) {
+        if (registrationSuccess) {
+            onRegisterSuccess() // Llama al callback de éxito para navegar
+            viewModel.resetRegistrationState() // Opcional: resetear estado del VM si la pantalla se reutiliza
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -73,7 +100,7 @@ fun RegisterScreen(
         ) {
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Header
+            // ... (Resto de tu UI, sin cambios en esta sección) ...
             Card(
                 modifier = Modifier.size(80.dp),
                 shape = RoundedCornerShape(16.dp),
@@ -111,11 +138,8 @@ fun RegisterScreen(
 
             // Username field
             OutlinedTextField(
-                value = username,
-                onValueChange = {
-                    username = it
-                    errorMessage = null
-                },
+                value = username, // Usa el estado del ViewModel
+                onValueChange = { viewModel.onUsernameChange(it) }, // Llama a la función del ViewModel
                 label = { Text("Nombre de Usuario") },
                 leadingIcon = {
                     Icon(Icons.Default.Person, contentDescription = "Usuario")
@@ -157,11 +181,8 @@ fun RegisterScreen(
 
             // Email field
             OutlinedTextField(
-                value = email,
-                onValueChange = {
-                    email = it
-                    errorMessage = null
-                },
+                value = email, // Usa el estado del ViewModel
+                onValueChange = { viewModel.onEmailChange(it) }, // Llama a la función del ViewModel
                 label = { Text("Email") },
                 leadingIcon = {
                     Icon(Icons.Default.Email, contentDescription = "Email")
@@ -203,11 +224,8 @@ fun RegisterScreen(
 
             // Password field
             OutlinedTextField(
-                value = password,
-                onValueChange = {
-                    password = it
-                    errorMessage = null
-                },
+                value = password, // Usa el estado del ViewModel
+                onValueChange = { viewModel.onPasswordChange(it) }, // Llama a la función del ViewModel
                 label = { Text("Contraseña") },
                 leadingIcon = {
                     Icon(Icons.Default.Lock, contentDescription = "Contraseña")
@@ -252,11 +270,8 @@ fun RegisterScreen(
 
             // Confirm password field
             OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = {
-                    confirmPassword = it
-                    errorMessage = null
-                },
+                value = confirmPassword, // Usa el estado del ViewModel
+                onValueChange = { viewModel.onConfirmPasswordChange(it) }, // Llama a la función del ViewModel
                 label = { Text("Confirmar Contraseña") },
                 leadingIcon = {
                     Icon(Icons.Default.Lock, contentDescription = "Confirmar")
@@ -344,7 +359,7 @@ fun RegisterScreen(
                 }
             }
 
-            // Error message
+            // Error message (ahora muestra el errorMessage del ViewModel)
             errorMessage?.let { error ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Card(
@@ -366,25 +381,20 @@ fun RegisterScreen(
             // Register button
             Button(
                 onClick = {
-                    if (!isFormValid) {
-                        errorMessage = when {
-                            !isUsernameValid -> "El nombre de usuario debe tener al menos 3 caracteres"
-                            !isEmailValid -> "Por favor ingresa un email válido"
-                            !isPasswordValid -> "La contraseña debe tener al menos 6 caracteres"
-                            !doPasswordsMatch -> "Las contraseñas no coinciden"
-                            !acceptTerms -> "Debes aceptar los términos y condiciones"
-                            else -> "Por favor completa todos los campos"
-                        }
-                        return@Button
+                    // La validación interna del ViewModel ya se encargará,
+                    // pero la UI puede dar feedback rápido si los campos no son válidos
+                    if (isFormValid) { // Solo llama si la validación de la UI es correcta
+                        viewModel.registerUser()
+                    } else {
+                        // Opcional: Mostrar un error genérico si el formulario no es válido
+                        // El ViewModel también puede hacer esto en registerUser()
                     }
-                    isLoading = true
-                    onRegisterClick(username, email, password, confirmPassword)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = isFormValid && !isLoading
+                enabled = isFormValid && !isLoading // El botón se deshabilita con isFormValid y isLoading
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -425,6 +435,8 @@ fun RegisterScreen(
         }
     }
 }
+
+// ... (El resto de tus funciones como PasswordStrengthIndicator y calculatePasswordStrength, sin cambios) ...
 
 @Composable
 fun PasswordStrengthIndicator(password: String) {
@@ -470,5 +482,22 @@ fun calculatePasswordStrength(password: String): Triple<String, Color, Float> {
 fun RegisterScreenPreview() {
     MaterialTheme {
         RegisterScreen()
+    }
+}
+
+// Necesitas un ViewModelFactory para pasar dependencias al ViewModel
+class RegisterViewModelFactory(
+    private val authRepository: AuthRepository
+) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(
+        modelClass: Class<T>,
+        extras: CreationExtras
+    ): T {
+        if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return RegisterViewModel(authRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
