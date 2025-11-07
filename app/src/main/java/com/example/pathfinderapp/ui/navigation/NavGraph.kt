@@ -17,8 +17,8 @@ import com.example.pathfinderapp.ui.viewmodels.RegisterViewModelFactory
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    isDarkMode: Boolean,  // 👈 Ya lo recibe
-    onThemeToggle: () -> Unit  // 👈 Ya lo recibe
+    isDarkMode: Boolean,
+    onThemeToggle: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -34,14 +34,13 @@ fun NavGraph(
                     navController.navigate(Screen.Register.route)
                 },
                 onForgotPasswordClick = { /* Agregar si la implementas */ },
-                isDarkMode = isDarkMode,  // 👈 AGREGADO: pasa el estado del tema
-                onThemeToggle = onThemeToggle  // 👈 AGREGADO: pasa la función de toggle
+                isDarkMode = isDarkMode,
+                onThemeToggle = onThemeToggle
             )
         }
 
         // 🔹 Pantalla de Registro
         composable(Screen.Register.route) {
-            // ✅ Crear el ViewModel con su Factory
             val registerViewModel: RegisterViewModel = viewModel(
                 factory = RegisterViewModelFactory(FirebaseAppAuthRepository())
             )
@@ -54,12 +53,12 @@ fun NavGraph(
                 onBackToLoginClick = {
                     navController.popBackStack()
                 },
-                isDarkMode = isDarkMode,  // Ya estaba
-                onThemeToggle = onThemeToggle  // Ya estaba
+                isDarkMode = isDarkMode,
+                onThemeToggle = onThemeToggle
             )
         }
 
-        // 🔹 Otras pantallas (sin cambios)
+
         composable(Screen.Home.route) { HomeScreen() }
         composable(Screen.Wiki.route) { WikiScreen() }
         composable(Screen.Dice.route) { DiceScreen() }
