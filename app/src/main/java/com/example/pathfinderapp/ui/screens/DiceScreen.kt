@@ -1,10 +1,21 @@
 package com.example.pathfinderapp.ui.screens
 
-import androidx.compose.animation.core.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import com.example.pathfinderapp.ui.viewmodel.DiceViewModel
+import androidx.compose.ui.platform.LocalContext
+
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import androidx.compose.runtime.LaunchedEffect
+import kotlin.math.sqrt
+
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.*
@@ -18,9 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.random.Random
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import androidx.compose.ui.tooling.preview.Preview
 
 enum class DiceType(val sides: Int, val label: String) {
@@ -34,39 +42,58 @@ enum class DiceType(val sides: Int, val label: String) {
 }
 
 @Composable
-fun DiceScreen() {
-    var selectedDice by remember { mutableStateOf(DiceType.D4) }
-    var diceValue by remember { mutableStateOf(20) }
-    var isRolling by remember { mutableStateOf(false) }
-    var rollHistory by remember { mutableStateOf(listOf<Int>()) }
-    var shakeToRollEnabled by remember { mutableStateOf(true) }
+fun DiceScreen(viewModel: DiceViewModel = viewModel()) {
+    val context = LocalContext.current
+    // --- Estados del ViewModel ---
+    val selectedDice by viewModel.selectedDice.collectAsState()
+    val diceValue by viewModel.diceValue.collectAsState()
+    val isRolling by viewModel.isRolling.collectAsState()
+    val rollHistory by viewModel.rollHistory.collectAsState()
+    val shakeToRollEnabled by viewModel.shakeToRollEnabled.collectAsState()
+    val rotationValue by viewModel.rotationValue.collectAsState()
+    val scaleValue by viewModel.scaleValue.collectAsState()
 
-    var rotationValue by remember { mutableStateOf(0f) }
-    var scaleValue by remember { mutableStateOf(1f) }
+    // --- Detector de movimiento (shake) ---
+    val sensorManager = remember { context.getSystemService(SensorManager::class.java) }
+    val accelerometer = remember { sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
 
-    val scope = rememberCoroutineScope()
+    DisposableEffect(shakeToRollEnabled) {
+        if (shakeToRollEnabled && accelerometer != null) {
+            val shakeListener = object : SensorEventListener {
+                private var lastTime = 0L
+                override fun onSensorChanged(event: SensorEvent?) {
+                    event?.let {
+                        val x = it.values[0]
+                        val y = it.values[1]
+                        val z = it.values[2]
+                        val acceleration = sqrt(x * x + y * y + z * z)
+                        val now = System.currentTimeMillis()
 
-    val rollDice: () -> Unit = {
-        if (!isRolling) {
-            isRolling = true
-
-            scope.launch {
-                repeat(10) { i ->
-                    rotationValue = (i * 72f)
-                    scaleValue = if (i % 2 == 0) 1.2f else 1.0f
-                    delay(100)
+                        // Detectar sacudida (ajusta el umbral según sensibilidad deseada)
+                        if (acceleration > 16 && now - lastTime > 1000) {
+                            lastTime = now
+                            viewModel.rollDice(context)
+                        }
+                    }
                 }
 
-                val newValue = Random.nextInt(1, selectedDice.sides + 1)
-                diceValue = newValue
-                rollHistory = (listOf(newValue) + rollHistory).take(10)
-
-                rotationValue = 0f
-                scaleValue = 1f
-                isRolling = false
+                override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
             }
+
+            sensorManager.registerListener(
+                shakeListener,
+                accelerometer,
+                SensorManager.SENSOR_DELAY_UI
+            )
+
+            onDispose {
+                sensorManager.unregisterListener(shakeListener)
+            }
+        } else {
+            onDispose { }
         }
     }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -88,6 +115,7 @@ fun DiceScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // --- Activar / desactivar agitar ---
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -118,7 +146,7 @@ fun DiceScreen() {
                     }
                     Switch(
                         checked = shakeToRollEnabled,
-                        onCheckedChange = { shakeToRollEnabled = it },
+                        onCheckedChange = { viewModel.onShakeToggle(it) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.White,
                             checkedTrackColor = Color(0xFF4CAF50),
@@ -131,7 +159,7 @@ fun DiceScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            // --- Selección de dado ---
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -157,11 +185,7 @@ fun DiceScreen() {
                                 FilterChip(
                                     selected = selectedDice == dice,
                                     onClick = {
-                                        if (!isRolling) {
-                                            selectedDice = dice
-                                            rollHistory = listOf()
-                                            diceValue = dice.sides
-                                        }
+                                        if (!isRolling) viewModel.selectDice(dice)
                                     },
                                     label = {
                                         Text(
@@ -189,11 +213,7 @@ fun DiceScreen() {
                                 FilterChip(
                                     selected = selectedDice == dice,
                                     onClick = {
-                                        if (!isRolling) {
-                                            selectedDice = dice
-                                            rollHistory = listOf()
-                                            diceValue = dice.sides
-                                        }
+                                        if (!isRolling) viewModel.selectDice(dice)
                                     },
                                     label = {
                                         Text(
@@ -214,6 +234,7 @@ fun DiceScreen() {
                 }
             }
 
+            // --- Dado principal ---
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -261,6 +282,7 @@ fun DiceScreen() {
                     }
                 }
             }
+
             Text(
                 text = if (shakeToRollEnabled)
                     "Puedes agitar para lanzar el dado"
@@ -272,7 +294,7 @@ fun DiceScreen() {
             Spacer(modifier = Modifier.height(6.dp))
 
             Button(
-                onClick = rollDice,
+                onClick = { viewModel.rollDice(context) },
                 enabled = !isRolling,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -296,6 +318,7 @@ fun DiceScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // --- Historial ---
             if (rollHistory.isNotEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
