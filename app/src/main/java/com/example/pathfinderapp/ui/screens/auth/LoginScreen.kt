@@ -9,12 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,22 +23,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pathfinderapp.ui.viewmodels.AuthState
+import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
+    authViewModel: AuthViewModel, // ✅ Se pasa desde NavGraph
     onRegisterClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     isDarkMode: Boolean = false,
     onThemeToggle: () -> Unit = {}
 ) {
+    val authState by authViewModel.authState.collectAsState()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val focusManager = LocalFocusManager.current
 
@@ -59,7 +55,6 @@ fun LoginScreen(
                 )
             )
     ) {
-        // 🔹 Botón para alternar tema (claro/oscuro) - Ahora accesible
         IconButton(
             onClick = onThemeToggle,
             modifier = Modifier
@@ -72,11 +67,10 @@ fun LoginScreen(
             )
         }
 
-        // 🔹 Contenedor centrado para el contenido
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 72.dp),  // Deja espacio arriba para el IconButton (16.dp padding + ~56.dp icon size)
+                .padding(top = 72.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -85,7 +79,6 @@ fun LoginScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 🔹 Logo / título
                 Card(
                     modifier = Modifier.size(100.dp),
                     shape = RoundedCornerShape(20.dp),
@@ -115,12 +108,11 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 🔹 Campo de Email
                 OutlinedTextField(
                     value = email,
                     onValueChange = {
                         email = it
-                        errorMessage = null
+                        authViewModel.clearError()
                     },
                     label = { Text("Email") },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
@@ -134,17 +126,17 @@ fun LoginScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    isError = errorMessage != null
+                    isError = authState is AuthState.Error,
+                    enabled = authState !is AuthState.Loading
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔹 Campo de Contraseña
                 OutlinedTextField(
                     value = password,
                     onValueChange = {
                         password = it
-                        errorMessage = null
+                        authViewModel.clearError()
                     },
                     label = { Text("Contraseña") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
@@ -165,22 +157,21 @@ fun LoginScreen(
                         onDone = {
                             focusManager.clearFocus()
                             if (email.isNotBlank() && password.isNotBlank()) {
-                                isLoading = true
-                                onLoginClick(email, password)
+                                authViewModel.login(email, password)
                             }
                         }
                     ),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    isError = errorMessage != null
+                    isError = authState is AuthState.Error,
+                    enabled = authState !is AuthState.Loading
                 )
 
-                // 🔹 Mensaje de error
-                errorMessage?.let { error ->
+                if (authState is AuthState.Error) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = error,
+                        text = (authState as AuthState.Error).message,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.fillMaxWidth()
@@ -189,7 +180,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 🔹 Olvidé contraseña
                 Text(
                     text = "¿Olvidaste tu contraseña?",
                     style = MaterialTheme.typography.bodySmall,
@@ -201,25 +191,19 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 🔹 Botón de login
                 Button(
                     onClick = {
-                        when {
-                            email.isBlank() -> errorMessage = "Por favor ingresa tu email"
-                            password.isBlank() -> errorMessage = "Por favor ingresa tu contraseña"
-                            else -> {
-                                isLoading = true
-                                onLoginClick(email, password)
-                            }
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            authViewModel.login(email, password)
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp),
-                    enabled = !isLoading
+                    enabled = authState !is AuthState.Loading
                 ) {
-                    if (isLoading) {
+                    if (authState is AuthState.Loading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary
@@ -231,7 +215,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔹 Separador
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -247,7 +230,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔹 Botón de registro
                 OutlinedButton(
                     onClick = onRegisterClick,
                     modifier = Modifier
@@ -260,7 +242,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-
                 Text(
                     text = "Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad",
                     style = MaterialTheme.typography.bodySmall,
@@ -270,13 +251,5 @@ fun LoginScreen(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    MaterialTheme {
-        LoginScreen()
     }
 }

@@ -17,14 +17,32 @@ class FirebaseAppAuthRepository : AuthRepository {
         return try {
             val userCredential = auth.createUserWithEmailAndPassword(email, password).await()
             userCredential.user?.let {
-                // Si necesitas guardar el username en otro lugar (ej. Firestore), este sería el momento
-                // val firestore = FirebaseFirestore.getInstance()
-                // firestore.collection("users").document(it.uid).set(mapOf("username" to username))
-
                 Result.success(it)
             } ?: Result.failure(Exception("Usuario Firebase no disponible después del registro."))
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun loginWithEmailAndPassword(
+        email: String,
+        password: String
+    ): Result<FirebaseUser> {
+        return try {
+            val userCredential = auth.signInWithEmailAndPassword(email, password).await()
+            userCredential.user?.let {
+                Result.success(it)
+            } ?: Result.failure(Exception("Usuario Firebase no disponible después del login."))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
+    }
+
+    override fun logout() {
+        auth.signOut()
     }
 }

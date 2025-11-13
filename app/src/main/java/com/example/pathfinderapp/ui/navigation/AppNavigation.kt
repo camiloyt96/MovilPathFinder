@@ -2,8 +2,8 @@ package com.example.pathfinderapp.ui.navigation
 
 import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
-import com.example.pathfinderapp.ui.components.LoadingScreen
 import com.example.pathfinderapp.ui.components.AppScaffold
+import com.example.pathfinderapp.ui.components.LoadingScreen
 import com.example.pathfinderapp.ui.viewmodels.AuthState
 import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
 
@@ -17,23 +17,13 @@ fun AppNavigation(
     val authState by authViewModel.authState.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
 
-    // Pantalla de carga
+    // ⏳ Pantalla de carga inicial
     if (authState is AuthState.Loading) {
         LoadingScreen()
         return
     }
 
-    // Scaffold principal (con o sin drawer según autenticación)
-    AppScaffold(
-        navController = navController,
-        authViewModel = authViewModel,
-        isAuthenticated = authState is AuthState.Authenticated,
-        currentUser = currentUser,
-        isDarkMode = isDarkMode,
-        onThemeToggle = onThemeToggle
-    )
-
-    // Auto-navegación según estado
+    // 🚀 Manejar navegación según estado de autenticación
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
@@ -46,7 +36,17 @@ fun AppNavigation(
                     popUpTo(0) { inclusive = true }
                 }
             }
-            else -> {}
+            else -> Unit
         }
     }
+
+    // 🧱 Contenedor principal con Drawer (si corresponde)
+    AppScaffold(
+        navController = navController,
+        authViewModel = authViewModel,
+        isAuthenticated = authState is AuthState.Authenticated,
+        currentUser = currentUser,
+        isDarkMode = isDarkMode,
+        onThemeToggle = onThemeToggle
+    )
 }

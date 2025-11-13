@@ -24,22 +24,16 @@ fun NavGraph(
         navController = navController,
         startDestination = Screen.Login.route
     ) {
-        // 🔹 Pantalla de Login
         composable(Screen.Login.route) {
             LoginScreen(
-                onLoginClick = { email, password ->
-                    authViewModel.login(email, password)
-                },
-                onRegisterClick = {
-                    navController.navigate(Screen.Register.route)
-                },
-                onForgotPasswordClick = { /* Agregar si la implementas */ },
+                authViewModel = authViewModel, // ✅ se pasa el mismo
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
+                onForgotPasswordClick = { },
                 isDarkMode = isDarkMode,
                 onThemeToggle = onThemeToggle
             )
         }
 
-        // 🔹 Pantalla de Registro
         composable(Screen.Register.route) {
             val registerViewModel: RegisterViewModel = viewModel(
                 factory = RegisterViewModelFactory(FirebaseAppAuthRepository())
@@ -58,12 +52,12 @@ fun NavGraph(
             )
         }
 
-
         composable(Screen.Home.route) { HomeScreen() }
         composable(Screen.Wiki.route) { WikiScreen() }
         composable(Screen.Dice.route) { DiceScreen() }
         composable(Screen.Character.route) { CharacterScreen() }
         composable(Screen.Bestiary.route) { BestiaryScreen() }
+
         composable(Screen.Menu.route) {
             MenuScreen(
                 onLogoutClick = { authViewModel.logout() }

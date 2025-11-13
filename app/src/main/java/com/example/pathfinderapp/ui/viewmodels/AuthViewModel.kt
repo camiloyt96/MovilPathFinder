@@ -2,13 +2,16 @@ package com.example.pathfinderapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.example.pathfinderapp.data.repository.AuthRepository
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -22,9 +25,18 @@ class AuthViewModel : ViewModel() {
 
     private fun checkSavedSession() {
         viewModelScope.launch {
-            delay(1000) // Simula carga
-            // TODO: Verificar SharedPreferences aquí
-            _authState.value = AuthState.Unauthenticated
+            // Verificar si hay un usuario de Firebase activo
+            val firebaseUser = authRepository.getCurrentUser()
+            if (firebaseUser != null) {
+                _currentUser.value = User(
+                    id = firebaseUser.uid,
+                    username = firebaseUser.displayName ?: firebaseUser.email?.substringBefore("@") ?: "Usuario",
+                    email = firebaseUser.email ?: ""
+                )
+                _authState.value = AuthState.Authenticated
+            } else {
+                _authState.value = AuthState.Unauthenticated
+            }
         }
     }
 
@@ -32,22 +44,17 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            try {
-                delay(1500) // Simula API
+            val result = authRepository.loginWithEmailAndPassword(email, password)
 
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    val user = User(
-                        id = "user_${System.currentTimeMillis()}",
-                        username = email.substringBefore("@"),
-                        email = email
-                    )
-                    _currentUser.value = user
-                    _authState.value = AuthState.Authenticated
-                } else {
-                    _authState.value = AuthState.Error("Credenciales inválidas")
-                }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error("Error: ${e.message}")
+            result.onSuccess { firebaseUser ->
+                _currentUser.value = User(
+                    id = firebaseUser.uid,
+                    username = firebaseUser.displayName ?: email.substringBefore("@"),
+                    email = firebaseUser.email ?: email
+                )
+                _authState.value = AuthState.Authenticated
+            }.onFailure { exception ->
+                _authState.value = AuthState.Error(exception.message ?: "Error al iniciar sesión")
             }
         }
     }
@@ -77,15 +84,18 @@ class AuthViewModel : ViewModel() {
                     }
                 }
 
-                delay(2000) // Simula registro
+                val result = authRepository.registerWithEmailAndPassword(email, password)
 
-                val user = User(
-                    id = "user_${System.currentTimeMillis()}",
-                    username = username,
-                    email = email
-                )
-                _currentUser.value = user
-                _authState.value = AuthState.Authenticated
+                result.onSuccess { firebaseUser ->
+                    _currentUser.value = User(
+                        id = firebaseUser.uid,
+                        username = username,
+                        email = firebaseUser.email ?: email
+                    )
+                    _authState.value = AuthState.Authenticated
+                }.onFailure { exception ->
+                    _authState.value = AuthState.Error(exception.message ?: "Error al registrar")
+                }
 
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Error al registrar: ${e.message}")
@@ -95,6 +105,7 @@ class AuthViewModel : ViewModel() {
 
     fun logout() {
         viewModelScope.launch {
+            authRepository.logout()
             _currentUser.value = null
             _authState.value = AuthState.Unauthenticated
         }
