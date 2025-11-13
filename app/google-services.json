@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "473287418255",
+    "project_id": "pathmobile-179e2",
+    "storage_bucket": "pathmobile-179e2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473287418255:android:a5a202977c297933a36bfa",
+        "android_client_info": {
+          "package_name": "com.example.pathfinderapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3LvgvBI0GrRAdIPV2URr_0VTveKxHsGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

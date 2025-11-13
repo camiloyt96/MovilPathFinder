@@ -1,0 +1,96 @@
+package com.example.pathfinderapp.ui.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.pathfinderapp.data.repository.FirebaseAppAuthRepository
+import com.example.pathfinderapp.ui.screens.*
+import com.example.pathfinderapp.ui.screens.auth.LoginScreen
+import com.example.pathfinderapp.ui.screens.auth.RegisterScreen
+import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
+import com.example.pathfinderapp.ui.viewmodels.RegisterViewModel
+import com.example.pathfinderapp.ui.viewmodels.RegisterViewModelFactory
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModelFactory
+
+@Composable
+fun NavGraph(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    isDarkMode: Boolean,
+    onThemeToggle: () -> Unit
+) {
+    // ✅ ViewModel compartido a nivel de NavGraph
+    val context = LocalContext.current
+    val characterViewModel: CharacterViewModel = viewModel(
+        factory = CharacterViewModelFactory(context)
+    )
+
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Login.route
+    ) {
+        composable(Screen.Login.route) {
+            LoginScreen(
+                authViewModel = authViewModel,
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
+                onForgotPasswordClick = { },
+                isDarkMode = isDarkMode,
+                onThemeToggle = onThemeToggle
+            )
+        }
+
+        composable(Screen.Register.route) {
+            val registerViewModel: RegisterViewModel = viewModel(
+                factory = RegisterViewModelFactory(FirebaseAppAuthRepository())
+            )
+
+            RegisterScreen(
+                viewModel = registerViewModel,
+                onRegisterClick = { username, email, password, confirmPassword ->
+                    registerViewModel.register(username, email, password, confirmPassword)
+                },
+                onBackToLoginClick = {
+                    navController.popBackStack()
+                },
+                isDarkMode = isDarkMode,
+                onThemeToggle = onThemeToggle
+            )
+        }
+
+        composable(Screen.Home.route) { HomeScreen() }
+        composable(Screen.Wiki.route) { WikiScreen() }
+        composable(Screen.Dice.route) { DiceScreen() }
+
+        // ✅ Lista de personajes - recibe el ViewModel compartido
+        composable(Screen.Characters.route) {
+            CharactersListScreen(
+                viewModel = characterViewModel,
+                onCreateCharacter = {
+                    navController.navigate(Screen.Character.route)
+                }
+            )
+        }
+
+        // ✅ Creación de personaje - recibe el ViewModel compartido
+        composable(Screen.Character.route) {
+            CharacterScreen(
+                viewModel = characterViewModel,
+                onCharacterCreated = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.Bestiary.route) { BestiaryScreen() }
+
+        composable(Screen.Menu.route) {
+            MenuScreen(
+                onLogoutClick = { authViewModel.logout() }
+            )
+        }
+    }
+}
