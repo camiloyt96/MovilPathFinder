@@ -20,7 +20,7 @@ class DiceViewModel : ViewModel() {
     private val _selectedDice = MutableStateFlow(DiceType.D4)
     val selectedDice = _selectedDice.asStateFlow()
 
-    private val _diceValue = MutableStateFlow(20)
+    private val _diceValue = MutableStateFlow(DiceType.D4.sides)
     val diceValue = _diceValue.asStateFlow()
 
     private val _isRolling = MutableStateFlow(false)

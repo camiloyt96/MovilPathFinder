@@ -20,9 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.pathfinderapp.ui.components.FeatureButton
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onNavigateToDice: () -> Unit,
+    onNavigateToCharacters: () -> Unit,
+    onNavigateToWiki: () -> Unit
+) {
 
     val infiniteTransition = rememberInfiniteTransition(label = "rotation")
 
@@ -214,25 +219,34 @@ fun HomeScreen() {
                         modifier = Modifier.padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            FeatureItem(
+
+                            FeatureButton(
                                 icon = Icons.Default.Casino,
-                                text = "Dados\nD4-D100"
+                                text = "Dados\nD4-D100",
+                                onClick = onNavigateToDice
                             )
-                            FeatureItem(
+
+                            FeatureButton(
                                 icon = Icons.Default.Person,
-                                text = "Gestión de\nPersonajes"
+                                text = "Gestión de\nPersonajes",
+                                onClick = onNavigateToCharacters
                             )
-                            FeatureItem(
+
+                            FeatureButton(
                                 icon = Icons.Default.Book,
-                                text = "Reglas y\nHechizos"
+                                text = "Hechizos de \nPersonaje",
+                                onClick = onNavigateToWiki
                             )
+
                         }
                     }
                 }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -276,6 +290,10 @@ fun FeatureItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text: Str
 @Composable
 fun HomeScreenPreview() {
     MaterialTheme {
-        HomeScreen()
+        HomeScreen(
+            onNavigateToDice = {},
+            onNavigateToCharacters = {},
+            onNavigateToWiki = {}
+        )
     }
 }

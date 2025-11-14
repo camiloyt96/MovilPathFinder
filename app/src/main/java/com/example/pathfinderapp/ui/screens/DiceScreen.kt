@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.pathfinderapp.ui.components.DiceSelector
+import com.example.pathfinderapp.ui.components.ShakeToggle
 
 enum class DiceType(val sides: Int, val label: String) {
     D4(4, "D4"),
@@ -116,46 +118,10 @@ fun DiceScreen(viewModel: DiceViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // --- Activar / desactivar agitar ---
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Agitar para tirar",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = if (shakeToRollEnabled) "Activado" else "Desactivado",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (shakeToRollEnabled)
-                                Color(0xFF4CAF50)
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(
-                        checked = shakeToRollEnabled,
-                        onCheckedChange = { viewModel.onShakeToggle(it) },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.White,
-                            checkedTrackColor = Color(0xFF4CAF50),
-                            uncheckedThumbColor = Color.White,
-                            uncheckedTrackColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-                }
-            }
+            ShakeToggle(
+                enabled = shakeToRollEnabled,
+                onToggle = { viewModel.onShakeToggle(it) }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -166,73 +132,15 @@ fun DiceScreen(viewModel: DiceViewModel = viewModel()) {
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
-                    Text(
-                        text = "Selecciona el dado",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                Column(modifier = Modifier.padding(12.dp)) {
+                    DiceSelector(
+                        selectedDice = selectedDice,
+                        onDiceSelected = { viewModel.selectDice(it) },
+                        isRolling = isRolling
                     )
-
-                    Column {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            listOf(DiceType.D4, DiceType.D6, DiceType.D8, DiceType.D10).forEach { dice ->
-                                FilterChip(
-                                    selected = selectedDice == dice,
-                                    onClick = {
-                                        if (!isRolling) viewModel.selectDice(dice)
-                                    },
-                                    label = {
-                                        Text(
-                                            text = dice.label,
-                                            fontSize = 25.sp,
-                                            fontWeight = if (selectedDice == dice) FontWeight.Bold else FontWeight.Normal
-                                        )
-                                    },
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 2.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            listOf(DiceType.D12, DiceType.D20, DiceType.D100).forEach { dice ->
-                                FilterChip(
-                                    selected = selectedDice == dice,
-                                    onClick = {
-                                        if (!isRolling) viewModel.selectDice(dice)
-                                    },
-                                    label = {
-                                        Text(
-                                            text = dice.label,
-                                            fontSize = 25.sp,
-                                            fontWeight = if (selectedDice == dice) FontWeight.Bold else FontWeight.Normal
-                                        )
-                                    },
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 2.dp)
-                                )
-                            }
-                        }
-                    }
                 }
             }
+
 
             // --- Dado principal ---
             Column(
@@ -293,27 +201,29 @@ fun DiceScreen(viewModel: DiceViewModel = viewModel()) {
             )
             Spacer(modifier = Modifier.height(6.dp))
 
-            Button(
-                onClick = { viewModel.rollDice(context) },
-                enabled = !isRolling,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Icon(
-                    Icons.Default.Casino,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (isRolling) "Tirando..." else "Tirar ${selectedDice.label}",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            if (!shakeToRollEnabled) {
+                Button(
+                    onClick = { viewModel.rollDice(context) },
+                    enabled = !isRolling,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.Casino,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (isRolling) "Tirando..." else "Tirar ${selectedDice.label}",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

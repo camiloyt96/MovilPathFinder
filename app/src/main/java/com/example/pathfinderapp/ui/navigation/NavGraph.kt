@@ -52,7 +52,14 @@ fun NavGraph(
             )
         }
 
-        composable(Screen.Home.route) { HomeScreen() }
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onNavigateToDice = { navController.navigate(Screen.Dice.route) },
+                onNavigateToCharacters = { navController.navigate(Screen.Character.route) },
+                onNavigateToWiki = { navController.navigate(Screen.Wiki.route) }
+            )
+        }
+
         composable(Screen.Wiki.route) { WikiScreen() }
         composable(Screen.Dice.route) { DiceScreen() }
         composable(Screen.Character.route) { CharacterScreen() }

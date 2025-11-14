@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pathfinderapp.data.models.SpellDetail
 import com.example.pathfinderapp.data.models.Spell
+import com.example.pathfinderapp.ui.components.SearchBar
 import com.example.pathfinderapp.ui.viewmodels.WikiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,27 +50,9 @@ fun WikiScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             // Barra de búsqueda
-            OutlinedTextField(
-                value = uiState.searchQuery,
-                onValueChange = { viewModel.searchSpells(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = { Text("Buscar hechizo...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
-                trailingIcon = {
-                    if (uiState.searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.searchSpells("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Limpiar")
-                        }
-                    }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Gray
-                )
+            SearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = { viewModel.searchSpells(it) }
             )
 
             // Filtros de nivel

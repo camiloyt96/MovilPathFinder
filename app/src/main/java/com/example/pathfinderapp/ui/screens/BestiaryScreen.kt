@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,11 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pathfinderapp.data.models.MonsterDetail
 import com.example.pathfinderapp.data.models.Monster
+import com.example.pathfinderapp.ui.components.BestiaryFilters
+import com.example.pathfinderapp.ui.components.SearchBar
 import com.example.pathfinderapp.ui.viewmodels.BestiaryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,6 +33,9 @@ fun BestiaryScreen(
     viewModel: BestiaryViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var filtersVisible by remember { mutableStateOf(true) }
+
+
 
     Scaffold(
         topBar = {
@@ -48,28 +55,40 @@ fun BestiaryScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             // Barra de búsqueda
-            OutlinedTextField(
-                value = uiState.searchQuery,
-                onValueChange = { viewModel.searchMonsters(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = { Text("Buscar monstruo...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
-                trailingIcon = {
-                    if (uiState.searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.searchMonsters("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Limpiar")
-                        }
-                    }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Gray
-                )
+            SearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = { viewModel.searchMonsters(it) }
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            TextButton(
+                onClick = { filtersVisible = !filtersVisible },
+                modifier = Modifier.height(40.dp)
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = "Filter",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Filter",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (filtersVisible) {
+                BestiaryFilters(
+                    selectedSize = uiState.selectedSize,
+                    onSizeSelected = { viewModel.filterBySize(it) },
+                    selectedType = uiState.selectedType,
+                    onTypeSelected = { viewModel.filterByType(it) },
+                    selectedCRRange = uiState.selectedChallengeRange,
+                    onCRRangeSelected = { viewModel.filterByChallengeRange(it) }
+                )
+            }
 
             // Contenido principal
             Box(modifier = Modifier.fillMaxSize()) {
@@ -331,3 +350,5 @@ fun ErrorMessage(
         }
     }
 }
+
+

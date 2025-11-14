@@ -17,12 +17,18 @@ data class BestiaryUiState(
     val selectedMonster: MonsterDetail? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val selectedSize: String? = null,
+    val selectedType: String? = null,
+    val selectedChallengeRange: ClosedFloatingPointRange<Double>? = null
 )
+
 
 class BestiaryViewModel : ViewModel() {
 
     private val repository = MonsterRepository.getInstance(DndApiService.create())
+
+    private val monsterDetailsCache = mutableMapOf<String, MonsterDetail>()
 
     private val _uiState = MutableStateFlow(BestiaryUiState())
     val uiState: StateFlow<BestiaryUiState> = _uiState.asStateFlow()
@@ -45,6 +51,9 @@ class BestiaryViewModel : ViewModel() {
                         filteredMonsters = monsters,
                         isLoading = false
                     )
+
+                    // Aquí se llama a precargar detalles
+                    preloadMonsterDetails(monsters)
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
@@ -54,6 +63,7 @@ class BestiaryViewModel : ViewModel() {
                 }
         }
     }
+
 
 
     //Busca monstruos por nombre
@@ -94,6 +104,58 @@ class BestiaryViewModel : ViewModel() {
                 }
         }
     }
+
+    private fun applyFilters() {
+        var filtered = _uiState.value.monsters
+
+        // Filtro de búsqueda
+        val query = _uiState.value.searchQuery
+        if (query.isNotEmpty()) {
+            filtered = filtered.filter { it.name.contains(query, ignoreCase = true) }
+        }
+
+        // Filtrado por detalles usando cache
+        filtered = filtered.filter { monster ->
+            val detail = monsterDetailsCache[monster.index] ?: return@filter true
+
+            val sizeMatch = _uiState.value.selectedSize?.let { it == detail.size } ?: true
+            val typeMatch = _uiState.value.selectedType?.let { it.equals(detail.type, true) } ?: true
+            val crMatch = _uiState.value.selectedChallengeRange?.let { detail.challengeRating in it } ?: true
+
+            sizeMatch && typeMatch && crMatch
+        }
+
+        _uiState.value = _uiState.value.copy(filteredMonsters = filtered)
+    }
+
+    fun filterBySize(size: String?) {
+        _uiState.value = _uiState.value.copy(selectedSize = size)
+        applyFilters()
+    }
+
+    fun filterByType(type: String?) {
+        _uiState.value = _uiState.value.copy(selectedType = type)
+        applyFilters()
+    }
+
+    fun filterByChallengeRange(range: ClosedFloatingPointRange<Double>?) {
+        _uiState.value = _uiState.value.copy(selectedChallengeRange = range)
+        applyFilters()
+    }
+    private fun preloadMonsterDetails(monsters: List<Monster>) {
+        viewModelScope.launch {
+            monsters.forEach { monster ->
+                if (!monsterDetailsCache.containsKey(monster.index)) {
+                    repository.getMonsterDetail(monster.index)
+                        .onSuccess { detail ->
+                            monsterDetailsCache[monster.index] = detail
+                        }
+                }
+            }
+        }
+    }
+
+
 
 
     //Limpia el monstruo seleccionado
