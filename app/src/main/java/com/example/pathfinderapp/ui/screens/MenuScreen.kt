@@ -1,5 +1,12 @@
 package com.example.pathfinderapp.ui.screens
 
+import android.Manifest
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,18 +16,52 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.pathfinderapp.ui.components.MiniProfile
-
+import com.example.pathfinderapp.ui.components.ProfileInfoRow
+import java.io.File
+import androidx.core.content.FileProvider
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
 fun MenuScreen(
     onLogoutClick: () -> Unit = {}
 ) {
-    var showLogoutDialog by remember { mutableStateOf(false) }
     var showProfileDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showPickerDialog by remember { mutableStateOf(false) }
+    var profilePhotoUri by remember { mutableStateOf<Uri?>(null) }
+
+    val context = LocalContext.current
+
+    // Launchers
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success -> if (success) { /* uri ya en profilePhotoUri */ } }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri -> profilePhotoUri = uri }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {}
+
+    // Abrir selector de imagen
+    fun pickImage() {
+        val permissions = mutableListOf<String>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        permissions.add(Manifest.permission.CAMERA)
+        permissionLauncher.launch(permissions.toTypedArray())
+        showPickerDialog = true
+    }
 
     Column(
         modifier = Modifier
@@ -86,18 +127,48 @@ fun MenuScreen(
         }
     }
 
-    // Diálogo MiniProfile
+    // MiniProfile Dialog
     if (showProfileDialog) {
         MiniProfile(
             username = "Usuario",
             email = "usuario@ejemplo.com",
             role = "Aventurero",
             memberSince = "Enero 2025",
+            photoUri = profilePhotoUri,
+            onChangePhoto = { pickImage() },
             onClose = { showProfileDialog = false }
         )
     }
 
-    // Diálogo de confirmación de cierre de sesión
+    // BottomSheet-like selector
+    if (showPickerDialog) {
+        AlertDialog(
+            onDismissRequest = { showPickerDialog = false },
+            title = { Text("Seleccionar Imagen") },
+            text = { Text("Elige de donde tomar la foto:") },
+            confirmButton = {
+                TextButton(onClick = {
+                    galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    showPickerDialog = false
+                }) {
+                    Text("Galería")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    val photoFile = File(context.cacheDir, "photo_${System.currentTimeMillis()}.jpg")
+                    val tempUri = FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
+                    profilePhotoUri = tempUri
+                    cameraLauncher.launch(tempUri)
+                    showPickerDialog = false
+                }) {
+                    Text("Cámara")
+                }
+            }
+        )
+    }
+
+    // Logout Dialog
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
@@ -113,14 +184,10 @@ fun MenuScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
                     )
-                ) {
-                    Text("Cerrar Sesión")
-                }
+                ) { Text("Cerrar Sesión") }
             },
             dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Cancelar")
-                }
+                TextButton(onClick = { showLogoutDialog = false }) { Text("Cancelar") }
             }
         )
     }
@@ -128,17 +195,14 @@ fun MenuScreen(
 
 @Composable
 fun MenuOption(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     title: String,
     description: String,
     iconTint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
     titleColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit
 ) {
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Surface(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,15 +217,5 @@ fun MenuOption(
             }
             Icon(Icons.Default.ChevronRight, null)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MenuScreenPreview() {
-    MaterialTheme {
-        MenuScreen(
-            onLogoutClick = {}
-        )
     }
 }
