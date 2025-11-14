@@ -22,7 +22,7 @@ fun BottomNavBar(navController: NavController) {
         BottomNavItem(Screen.Home.route, Icons.Filled.Home, "Inicio"),
         BottomNavItem(Screen.Wiki.route, Icons.Filled.Book, "Wiki"),
         BottomNavItem(Screen.Dice.route, Icons.Filled.Casino, "D20"),
-        BottomNavItem(Screen.Character.route, Icons.Filled.Person, "Personaje"),
+        BottomNavItem(Screen.Characters.route, Icons.Filled.Person, "Personaje"),
         BottomNavItem(Screen.Bestiary.route, Icons.Filled.Book, "Bestiario"),
         BottomNavItem(Screen.Menu.route, Icons.Filled.Menu, "Menú")
 

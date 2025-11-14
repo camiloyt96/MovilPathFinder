@@ -38,11 +38,9 @@ fun AppScaffold(
         // Solo Login/Register (sin drawer)
         UnauthenticatedScaffold(
             navController = navController,
-
             authViewModel = authViewModel,
             isDarkMode = isDarkMode,
             onThemeToggle = onThemeToggle
-
         )
     }
 }
@@ -50,11 +48,9 @@ fun AppScaffold(
 @Composable
 fun UnauthenticatedScaffold(
     navController: NavHostController,
-
     authViewModel: AuthViewModel,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
-
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -65,7 +61,6 @@ fun UnauthenticatedScaffold(
             authViewModel = authViewModel,
             isDarkMode = isDarkMode,
             onThemeToggle = onThemeToggle,
-
         )
     }
 }
@@ -92,7 +87,8 @@ fun AuthenticatedScaffold(
             Screen.Home.route -> "Inicio"
             Screen.Wiki.route -> "Wiki"
             Screen.Dice.route -> "Dado D20"
-            Screen.Character.route -> "Personaje"
+            Screen.Characters.route -> "Mis Personajes"
+            Screen.Characters.route -> "Crear Personaje"
             Screen.Bestiary.route -> "Bestiario"
             Screen.Menu.route -> "Configuración"
             else -> "Pathfinder"
@@ -151,11 +147,9 @@ fun AuthenticatedScaffold(
             Surface(modifier = Modifier.padding(paddingValues)) {
                 NavGraph(
                     navController = navController,
-
                     authViewModel = authViewModel,
                     isDarkMode = isDarkMode,
                     onThemeToggle = onThemeToggle
-
                 )
             }
         }

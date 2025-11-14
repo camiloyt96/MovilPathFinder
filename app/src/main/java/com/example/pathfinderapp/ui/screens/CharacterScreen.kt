@@ -20,32 +20,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-data class Race(
-    val name: String,
-    val description: String,
-    val bonuses: Map<String, Int>,
-    val specialTraits: String
-)
-
-data class CharacterClass(
-    val name: String,
-    val description: String,
-    val hitDie: String,
-    val primaryStats: String
-)
-
-data class CharacterStats(
-    var strength: Int = 10,
-    var dexterity: Int = 10,
-    var constitution: Int = 10,
-    var intelligence: Int = 10,
-    var wisdom: Int = 10,
-    var charisma: Int = 10
-)
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pathfinderapp.data.models.CharacterProfile
+import com.example.pathfinderapp.data.models.Race
+import com.example.pathfinderapp.data.models.CharacterClass
+import com.example.pathfinderapp.data.models.CharacterStats
+import android.util.Log
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModelFactory
 
 @Composable
-fun CharacterScreen() {
+fun CharacterScreen(
+    viewModel: CharacterViewModel, // ✅ Recibe el ViewModel como parámetro
+    onCharacterCreated: () -> Unit = {}
+) {
+
     var currentStep by remember { mutableStateOf(0) }
     var characterName by remember { mutableStateOf("") }
     var selectedRace by remember { mutableStateOf<Race?>(null) }
@@ -96,7 +86,6 @@ fun CharacterScreen() {
             mapOf("Libre" to 1),
             "Visión en la oscuridad, ferocidad (sigue luchando a 0 PG)"
         )
-        //Creo que tenemos que agregar mas razas
     )
 
     val classes = listOf(
@@ -166,7 +155,6 @@ fun CharacterScreen() {
             "d8",
             "Destreza, Carisma o Inteligencia"
         )
-        //Creo que tenemos que agregar mas
     )
 
     Surface(
@@ -246,6 +234,20 @@ fun CharacterScreen() {
                 } else {
                     Button(
                         onClick = {
+                            // Crear el personaje
+                            if (selectedRace != null && selectedClass != null) {
+                                Log.d("CharacterScreen", "Creando personaje: $characterName")
+                                val character = CharacterProfile(
+                                    name = characterName,
+                                    race = selectedRace!!,
+                                    characterClass = selectedClass!!,
+                                    stats = stats
+                                )
+                                Log.d("CharacterScreen", "Personaje creado: ${character.id}, ${character.name}")
+                                viewModel.addCharacter(character)
+                                Log.d("CharacterScreen", "Personaje agregado al ViewModel")
+                                onCharacterCreated()
+                            }
                         },
                         enabled = pointsRemaining == 0
                     ) {
@@ -649,12 +651,4 @@ fun calculatePointCost(value: Int): Int {
 fun getModifier(stat: Int): String {
     val mod = (stat - 10) / 2
     return if (mod >= 0) "+$mod" else "$mod"
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CharacterScreenPreview() {
-    MaterialTheme {
-        CharacterScreen()
-    }
 }

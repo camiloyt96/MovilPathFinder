@@ -1,6 +1,7 @@
 package com.example.pathfinderapp.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,6 +13,8 @@ import com.example.pathfinderapp.ui.screens.auth.RegisterScreen
 import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
 import com.example.pathfinderapp.ui.viewmodels.RegisterViewModel
 import com.example.pathfinderapp.ui.viewmodels.RegisterViewModelFactory
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModelFactory
 
 @Composable
 fun NavGraph(
@@ -20,13 +23,19 @@ fun NavGraph(
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
 ) {
+    // ✅ ViewModel compartido a nivel de NavGraph
+    val context = LocalContext.current
+    val characterViewModel: CharacterViewModel = viewModel(
+        factory = CharacterViewModelFactory(context)
+    )
+
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
             LoginScreen(
-                authViewModel = authViewModel, // ✅ se pasa el mismo
+                authViewModel = authViewModel,
                 onRegisterClick = { navController.navigate(Screen.Register.route) },
                 onForgotPasswordClick = { },
                 isDarkMode = isDarkMode,
@@ -55,14 +64,34 @@ fun NavGraph(
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToDice = { navController.navigate(Screen.Dice.route) },
-                onNavigateToCharacters = { navController.navigate(Screen.Character.route) },
+                onNavigateToCharacters = { navController.navigate(Screen.Characters.route) },
                 onNavigateToWiki = { navController.navigate(Screen.Wiki.route) }
             )
         }
 
         composable(Screen.Wiki.route) { WikiScreen() }
         composable(Screen.Dice.route) { DiceScreen() }
-        composable(Screen.Character.route) { CharacterScreen() }
+
+        // ✅ Lista de personajes - recibe el ViewModel compartido
+        composable(Screen.Characters.route) {
+            CharactersListScreen(
+                viewModel = characterViewModel,
+                onCreateCharacter = {
+                    navController.navigate(Screen.Character.route)
+                }
+            )
+        }
+
+        // ✅ Creación de personaje - recibe el ViewModel compartido
+        composable(Screen.Character.route) {
+            CharacterScreen(
+                viewModel = characterViewModel,
+                onCharacterCreated = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable(Screen.Bestiary.route) { BestiaryScreen() }
 
         composable(Screen.Menu.route) {

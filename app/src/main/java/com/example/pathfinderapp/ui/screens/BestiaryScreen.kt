@@ -33,7 +33,7 @@ fun BestiaryScreen(
     viewModel: BestiaryViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var filtersVisible by remember { mutableStateOf(true) }
+    var filtersVisible by remember { mutableStateOf(false) }
 
 
 

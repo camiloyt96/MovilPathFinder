@@ -72,7 +72,7 @@ private fun DrawerMenuItems(
         Triple("Inicio", Icons.Default.Home, Screen.Home.route),
         Triple("Wiki", Icons.Default.Book, Screen.Wiki.route),
         Triple("Dado D20", Icons.Default.Casino, Screen.Dice.route),
-        Triple("Personaje", Icons.Default.Person, Screen.Character.route),
+        Triple("Mis Personajes", Icons.Default.Person, Screen.Characters.route), // ✅ Cambio aquí
         Triple("Bestiario", Icons.Default.Pets, Screen.Bestiary.route),
         Triple("Configuración", Icons.Default.Settings, Screen.Menu.route)
     )

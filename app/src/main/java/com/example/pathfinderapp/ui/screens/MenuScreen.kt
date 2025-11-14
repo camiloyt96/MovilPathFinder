@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pathfinderapp.ui.components.MiniProfile
+
 
 @Composable
 fun MenuScreen(
@@ -84,43 +86,14 @@ fun MenuScreen(
         }
     }
 
-    // Diálogo de perfil
+    // Diálogo MiniProfile
     if (showProfileDialog) {
-        AlertDialog(
-            onDismissRequest = { showProfileDialog = false },
-            icon = {
-                Icon(
-                    Icons.Default.Person,
-                    null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(48.dp)
-                )
-            },
-            title = {
-                Text(
-                    "Mi Perfil",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    ProfileInfoRow(label = "Nombre", value = "Usuario")
-                    ProfileInfoRow(label = "Email", value = "usuario@ejemplo.com")
-                    ProfileInfoRow(label = "Rol", value = "Aventurero")
-                    ProfileInfoRow(label = "Miembro desde", value = "Enero 2025")
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = { showProfileDialog = false }
-                ) {
-                    Text("Cerrar")
-                }
-            }
+        MiniProfile(
+            username = "Usuario",
+            email = "usuario@ejemplo.com",
+            role = "Aventurero",
+            memberSince = "Enero 2025",
+            onClose = { showProfileDialog = false }
         )
     }
 
@@ -149,27 +122,6 @@ fun MenuScreen(
                     Text("Cancelar")
                 }
             }
-        )
-    }
-}
-
-@Composable //Aqui se modifica los parametros para el mi perfil
-fun ProfileInfoRow(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Normal
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(top = 8.dp),
-            color = MaterialTheme.colorScheme.outlineVariant
         )
     }
 }
@@ -208,6 +160,8 @@ fun MenuOption(
 @Composable
 fun MenuScreenPreview() {
     MaterialTheme {
-        MenuScreen()
+        MenuScreen(
+            onLogoutClick = {}
+        )
     }
 }
