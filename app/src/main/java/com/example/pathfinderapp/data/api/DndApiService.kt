@@ -16,7 +16,6 @@ import retrofit2.http.Query
 
 interface DndApiService {
 
-    // Endpoints de Monstruos
     @GET("monsters")
     suspend fun getMonsters(): MonsterListResponse
 

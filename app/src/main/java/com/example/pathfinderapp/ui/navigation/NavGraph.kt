@@ -23,7 +23,6 @@ fun NavGraph(
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
 ) {
-    // ✅ ViewModel compartido a nivel de NavGraph
     val context = LocalContext.current
     val characterViewModel: CharacterViewModel = viewModel(
         factory = CharacterViewModelFactory(context)
@@ -72,7 +71,6 @@ fun NavGraph(
         composable(Screen.Wiki.route) { WikiScreen() }
         composable(Screen.Dice.route) { DiceScreen() }
 
-        // ✅ Lista de personajes - recibe el ViewModel compartido
         composable(Screen.Characters.route) {
             CharactersListScreen(
                 viewModel = characterViewModel,
@@ -82,7 +80,6 @@ fun NavGraph(
             )
         }
 
-        // ✅ Creación de personaje - recibe el ViewModel compartido
         composable(Screen.Character.route) {
             CharacterScreen(
                 viewModel = characterViewModel,

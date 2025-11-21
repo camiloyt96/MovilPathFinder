@@ -8,9 +8,6 @@ import kotlinx.coroutines.withContext
 
 class MonsterRepository(private val apiService: DndApiService) {
 
-    /**
-     * Obtiene la lista completa de monstruos
-     */
     suspend fun getMonsters(): Result<List<Monster>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -22,9 +19,6 @@ class MonsterRepository(private val apiService: DndApiService) {
         }
     }
 
-    /**
-     * Obtiene el detalle de un monstruo específico
-     */
     suspend fun getMonsterDetail(index: String): Result<MonsterDetail> {
         return withContext(Dispatchers.IO) {
             try {
@@ -36,9 +30,6 @@ class MonsterRepository(private val apiService: DndApiService) {
         }
     }
 
-    /**
-     * Busca monstruos por nombre
-     */
     suspend fun searchMonsters(query: String): Result<List<Monster>> {
         return withContext(Dispatchers.IO) {
             try {

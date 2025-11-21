@@ -8,9 +8,7 @@ import kotlinx.coroutines.withContext
 
 class SpellRepository(private val apiService: DndApiService) {
 
-    /**
-     * Obtiene la lista completa de hechizos
-     */
+
     suspend fun getSpells(): Result<List<Spell>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -22,9 +20,6 @@ class SpellRepository(private val apiService: DndApiService) {
         }
     }
 
-    /**
-     * Obtiene el detalle de un hechizo específico
-     */
     suspend fun getSpellDetail(index: String): Result<SpellDetail> {
         return withContext(Dispatchers.IO) {
             try {
@@ -36,9 +31,7 @@ class SpellRepository(private val apiService: DndApiService) {
         }
     }
 
-    /**
-     * Busca hechizos por nombre
-     */
+
     suspend fun searchSpells(query: String): Result<List<Spell>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -53,10 +46,7 @@ class SpellRepository(private val apiService: DndApiService) {
         }
     }
 
-    /**
-     * Filtra hechizos por nivel
-     * @param level Nivel del hechizo (0 para cantrips, 1-9 para niveles)
-     */
+
     suspend fun getSpellsByLevel(level: Int): Result<List<SpellDetail>> {
         return withContext(Dispatchers.IO) {
             try {

@@ -34,7 +34,6 @@ fun MiniProfile(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                // FOTO PERFIL
                 Box(modifier = Modifier.size(90.dp)) {
                     if (photoUri != null) {
                         AsyncImage(
@@ -55,7 +54,6 @@ fun MiniProfile(
                         )
                     }
 
-                    // Botón para cambiar foto
                     FloatingActionButton(
                         onClick = onChangePhoto,
                         modifier = Modifier
@@ -68,7 +66,6 @@ fun MiniProfile(
                     }
                 }
 
-                // Información de perfil
                 ProfileInfoRow("Nombre", username)
                 ProfileInfoRow("Email", email)
                 ProfileInfoRow("Rol", role)

@@ -2,20 +2,17 @@ package com.example.pathfinderapp.data.models
 
 import com.google.gson.annotations.SerializedName
 
-// Respuesta de lista de hechizos
 data class SpellListResponse(
     val count: Int,
     val results: List<Spell>
 )
 
-// Hechizo básico (para la lista)
 data class Spell(
     val index: String,
     val name: String,
     val url: String
 )
 
-// Detalle completo de un hechizo
 data class SpellDetail(
     val index: String,
     val name: String,

@@ -36,7 +36,6 @@ fun RegisterScreen(
     isDarkMode: Boolean = false,
     onThemeToggle: () -> Unit = {}
 ) {
-    // Estados provenientes del ViewModel
     val username by viewModel.username.collectAsState()
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
@@ -45,14 +44,12 @@ fun RegisterScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val registrationSuccess by viewModel.registrationSuccess.collectAsState()
 
-    // Estados locales solo para UI
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var acceptTerms by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
 
-    // Validaciones básicas
     val isUsernameValid = username.length >= 3
     val isEmailValid = email.contains("@") && email.contains(".")
     val isPasswordValid = password.length >= 6
@@ -83,7 +80,6 @@ fun RegisterScreen(
             )
         }
 
-        // 🔹 Contenedor centrado para el contenido
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,7 +102,6 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 🔹 Nombre de usuario
                 OutlinedTextField(
                     value = username,
                     onValueChange = { viewModel.onUsernameChange(it) },
@@ -126,7 +121,6 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Email
                 OutlinedTextField(
                     value = email,
                     onValueChange = { viewModel.onEmailChange(it) },
@@ -178,7 +172,6 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔹 Confirmar contraseña
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { viewModel.onConfirmPasswordChange(it) },
@@ -205,13 +198,11 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔹 Checkbox de términos
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = acceptTerms, onCheckedChange = { acceptTerms = it })
                     Text("Acepto los términos y condiciones")
                 }
 
-                // 🔹 Error del ViewModel
                 errorMessage?.let {
                     Text(
                         text = it,
@@ -223,7 +214,6 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Botón de crear cuenta
                 Button(
                     onClick = {
                         if (!isFormValid) return@Button
@@ -259,10 +249,8 @@ fun RegisterScreen(
         }
     }
 
-    // Si el registro fue exitoso, podrías mostrar un mensaje o navegar
     if (registrationSuccess) {
         LaunchedEffect(Unit) {
-            // Ejemplo: resetear el estado tras el registro
             viewModel.resetRegistrationState()
             onBackToLoginClick()
         }

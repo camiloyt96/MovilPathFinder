@@ -17,13 +17,11 @@ fun AppNavigation(
     val authState by authViewModel.authState.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
 
-    // Pantalla de carga
     if (authState is AuthState.Loading) {
         LoadingScreen()
         return
     }
 
-    // Scaffold principal (con o sin drawer según autenticación)
     AppScaffold(
         navController = navController,
         authViewModel = authViewModel,
@@ -33,7 +31,6 @@ fun AppNavigation(
         onThemeToggle = onThemeToggle
     )
 
-    // Auto-navegación según estado
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {

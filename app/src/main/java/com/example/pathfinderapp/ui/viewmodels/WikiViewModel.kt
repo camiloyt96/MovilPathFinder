@@ -28,14 +28,12 @@ class WikiViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(WikiUiState())
     val uiState: StateFlow<WikiUiState> = _uiState.asStateFlow()
 
-    // Cache de detalles de hechizos
     private val spellDetailsCache = mutableMapOf<String, SpellDetail>()
 
     init {
         loadSpells()
     }
 
-    // Carga lista de hechizos y pre-carga detalles
     fun loadSpells() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -73,33 +71,28 @@ class WikiViewModel : ViewModel() {
         }
     }
 
-    // Búsqueda de hechizos
     fun searchSpells(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
         applyFilters()
     }
 
-    // Filtra por nivel (0 = Cantrip, 1-9 niveles, null = todos)
     fun filterByLevel(level: Int?) {
         _uiState.value = _uiState.value.copy(selectedLevel = level)
         applyFilters()
     }
 
-    // Aplica búsqueda + filtros combinados
     private fun applyFilters() {
         val query = _uiState.value.searchQuery
         val level = _uiState.value.selectedLevel
 
         var filtered = _uiState.value.spells
 
-        // Filtrar por búsqueda
         if (query.isNotEmpty()) {
             filtered = filtered.filter {
                 it.name.contains(query, ignoreCase = true)
             }
         }
 
-        // Filtrar por nivel usando cache
         if (level != null) {
             filtered = filtered.filter { spell ->
                 spellDetailsCache[spell.index]?.level == level
@@ -109,7 +102,6 @@ class WikiViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(filteredSpells = filtered)
     }
 
-    // Carga detalle de hechizo seleccionado
     fun loadSpellDetail(index: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)

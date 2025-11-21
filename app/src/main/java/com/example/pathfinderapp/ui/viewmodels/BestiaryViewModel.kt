@@ -38,8 +38,6 @@ class BestiaryViewModel : ViewModel() {
     }
 
 
-    //Carga la lista de monstruos
-
     fun loadMonsters() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -52,7 +50,6 @@ class BestiaryViewModel : ViewModel() {
                         isLoading = false
                     )
 
-                    // Aquí se llama a precargar detalles
                     preloadMonsterDetails(monsters)
                 }
                 .onFailure { exception ->
@@ -64,9 +61,6 @@ class BestiaryViewModel : ViewModel() {
         }
     }
 
-
-
-    //Busca monstruos por nombre
 
     fun searchMonsters(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
@@ -83,7 +77,6 @@ class BestiaryViewModel : ViewModel() {
     }
 
 
-    //Carga el detalle de un monstruo específico
 
     fun loadMonsterDetail(index: String) {
         viewModelScope.launch {
@@ -108,13 +101,11 @@ class BestiaryViewModel : ViewModel() {
     private fun applyFilters() {
         var filtered = _uiState.value.monsters
 
-        // Filtro de búsqueda
         val query = _uiState.value.searchQuery
         if (query.isNotEmpty()) {
             filtered = filtered.filter { it.name.contains(query, ignoreCase = true) }
         }
 
-        // Filtrado por detalles usando cache
         filtered = filtered.filter { monster ->
             val detail = monsterDetailsCache[monster.index] ?: return@filter true
 
@@ -156,16 +147,11 @@ class BestiaryViewModel : ViewModel() {
     }
 
 
-
-
-    //Limpia el monstruo seleccionado
-
     fun clearSelectedMonster() {
         _uiState.value = _uiState.value.copy(selectedMonster = null)
     }
 
 
-    //Limpia el error
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)

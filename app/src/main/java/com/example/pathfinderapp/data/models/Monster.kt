@@ -2,20 +2,17 @@ package com.example.pathfinderapp.data.models
 
 import com.google.gson.annotations.SerializedName
 
-// Respuesta de lista de monstruos
 data class MonsterListResponse(
     val count: Int,
     val results: List<Monster>
 )
 
-// Monstruo básico (para la lista)
 data class Monster(
     val index: String,
     val name: String,
     val url: String
 )
 
-// Detalle completo de un monstruo
 data class MonsterDetail(
     val index: String,
     val name: String,

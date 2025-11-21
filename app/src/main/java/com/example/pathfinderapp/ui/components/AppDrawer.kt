@@ -20,13 +20,11 @@ fun AppDrawer(
     ModalDrawerSheet {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Header usuario
         DrawerHeader(currentUser)
 
         HorizontalDivider()
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Items del menú
         DrawerMenuItems(
             selectedItem = selectedItem,
             onItemClick = onItemClick
@@ -35,7 +33,6 @@ fun AppDrawer(
         Spacer(modifier = Modifier.weight(1f))
         HorizontalDivider()
 
-        // Botón cerrar sesión
         DrawerLogoutButton(onLogoutClick)
         Spacer(modifier = Modifier.height(8.dp))
     }

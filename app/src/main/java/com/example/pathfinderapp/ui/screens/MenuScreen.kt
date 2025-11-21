@@ -37,7 +37,6 @@ fun MenuScreen(
 
     val context = LocalContext.current
 
-    // Launchers
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success -> if (success) { /* uri ya en profilePhotoUri */ } }
@@ -50,7 +49,6 @@ fun MenuScreen(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {}
 
-    // Abrir selector de imagen
     fun pickImage() {
         val permissions = mutableListOf<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -76,7 +74,6 @@ fun MenuScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // Sección Cuenta
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -93,7 +90,6 @@ fun MenuScreen(
             }
         }
 
-        // Sección Preferencias
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -108,7 +104,6 @@ fun MenuScreen(
             }
         }
 
-        // Botón Cerrar Sesión
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -127,7 +122,6 @@ fun MenuScreen(
         }
     }
 
-    // MiniProfile Dialog
     if (showProfileDialog) {
         MiniProfile(
             username = "Usuario",
@@ -140,7 +134,6 @@ fun MenuScreen(
         )
     }
 
-    // BottomSheet-like selector
     if (showPickerDialog) {
         AlertDialog(
             onDismissRequest = { showPickerDialog = false },
@@ -168,7 +161,6 @@ fun MenuScreen(
         )
     }
 
-    // Logout Dialog
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },

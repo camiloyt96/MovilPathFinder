@@ -16,7 +16,6 @@ import kotlin.random.Random
 
 class DiceViewModel : ViewModel() {
 
-    // --- Estados principales ---
     private val _selectedDice = MutableStateFlow(DiceType.D4)
     val selectedDice = _selectedDice.asStateFlow()
 
@@ -38,7 +37,6 @@ class DiceViewModel : ViewModel() {
     private val _scaleValue = MutableStateFlow(1f)
     val scaleValue = _scaleValue.asStateFlow()
 
-    // --- Funciones de actualización de estado ---
     fun onShakeToggle(enabled: Boolean) {
         _shakeToRollEnabled.value = enabled
     }
@@ -50,7 +48,6 @@ class DiceViewModel : ViewModel() {
         _diceValue.value = dice.sides
     }
 
-    // --- Lógica principal: lanzar dado ---
     fun rollDice(context: Context?) {
         if (_isRolling.value) return
 
@@ -70,14 +67,12 @@ class DiceViewModel : ViewModel() {
             _scaleValue.value = 1f
             _isRolling.value = false
 
-            // Vibración (si está activada)
             if (_shakeToRollEnabled.value && context != null) {
                 vibrateDevice(context)
             }
         }
     }
 
-    // --- Función de vibración del dispositivo ---
     private fun vibrateDevice(context: Context, duration: Long = 150) {
         try {
             val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

@@ -26,7 +26,6 @@ fun AppScaffold(
     onThemeToggle: () -> Unit
 ) {
     if (isAuthenticated) {
-        // App completa con drawer
         AuthenticatedScaffold(
             navController = navController,
             authViewModel = authViewModel,
@@ -35,7 +34,6 @@ fun AppScaffold(
             onThemeToggle = onThemeToggle
         )
     } else {
-        // Solo Login/Register (sin drawer)
         UnauthenticatedScaffold(
             navController = navController,
             authViewModel = authViewModel,
@@ -81,7 +79,6 @@ fun AuthenticatedScaffold(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Actualizar título según ruta
     LaunchedEffect(currentRoute) {
         selectedItem = when (currentRoute) {
             Screen.Home.route -> "Inicio"

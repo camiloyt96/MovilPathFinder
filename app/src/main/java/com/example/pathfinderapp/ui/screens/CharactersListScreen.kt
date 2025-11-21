@@ -27,7 +27,6 @@ fun CharactersListScreen(
         Log.d("CharactersListScreen", "Pantalla cargada, personajes: ${characters.size}")
     }
 
-    // Diálogo de confirmación para eliminar
     if (characterToDelete != null) {
         AlertDialog(
             onDismissRequest = { characterToDelete = null },

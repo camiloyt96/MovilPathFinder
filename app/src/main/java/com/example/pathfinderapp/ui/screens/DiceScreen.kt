@@ -55,7 +55,6 @@ fun DiceScreen(viewModel: DiceViewModel = viewModel()) {
     val rotationValue by viewModel.rotationValue.collectAsState()
     val scaleValue by viewModel.scaleValue.collectAsState()
 
-    // --- Detector de movimiento (shake) ---
     val sensorManager = remember { context.getSystemService(SensorManager::class.java) }
     val accelerometer = remember { sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
 
@@ -228,7 +227,6 @@ fun DiceScreen(viewModel: DiceViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Historial ---
             if (rollHistory.isNotEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),

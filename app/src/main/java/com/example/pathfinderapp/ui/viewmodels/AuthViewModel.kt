@@ -25,7 +25,6 @@ class AuthViewModel(
 
     private fun checkSavedSession() {
         viewModelScope.launch {
-            // Verificar si hay un usuario de Firebase activo
             val firebaseUser = authRepository.getCurrentUser()
             if (firebaseUser != null) {
                 _currentUser.value = User(
@@ -64,7 +63,6 @@ class AuthViewModel(
             _authState.value = AuthState.Loading
 
             try {
-                // Validaciones
                 when {
                     password != confirmPassword -> {
                         _authState.value = AuthState.Error("Las contraseñas no coinciden")
@@ -118,7 +116,6 @@ class AuthViewModel(
     }
 }
 
-// Estados de autenticación
 sealed class AuthState {
     object Loading : AuthState()
     object Authenticated : AuthState()
@@ -126,7 +123,6 @@ sealed class AuthState {
     data class Error(val message: String) : AuthState()
 }
 
-// Modelo de usuario
 data class User(
     val id: String,
     val username: String,

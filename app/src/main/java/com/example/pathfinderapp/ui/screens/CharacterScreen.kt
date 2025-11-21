@@ -32,7 +32,7 @@ import com.example.pathfinderapp.ui.viewmodels.CharacterViewModelFactory
 
 @Composable
 fun CharacterScreen(
-    viewModel: CharacterViewModel, // ✅ Recibe el ViewModel como parámetro
+    viewModel: CharacterViewModel,
     onCharacterCreated: () -> Unit = {}
 ) {
 
@@ -234,7 +234,6 @@ fun CharacterScreen(
                 } else {
                     Button(
                         onClick = {
-                            // Crear el personaje
                             if (selectedRace != null && selectedClass != null) {
                                 Log.d("CharacterScreen", "Creando personaje: $characterName")
                                 val character = CharacterProfile(

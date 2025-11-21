@@ -54,7 +54,6 @@ fun BestiaryScreen(
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Barra de búsqueda
             SearchBar(
                 query = uiState.searchQuery,
                 onQueryChange = { viewModel.searchMonsters(it) }
@@ -90,7 +89,6 @@ fun BestiaryScreen(
                 )
             }
 
-            // Contenido principal
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     uiState.isLoading -> {
@@ -208,7 +206,6 @@ fun MonsterDetailView(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Información básica
             item {
                 DetailCard(title = "Información Básica") {
                     DetailRow("Tipo", "${monster.size} ${monster.type}")
@@ -217,7 +214,6 @@ fun MonsterDetailView(
                 }
             }
 
-            // Estadísticas
             item {
                 DetailCard(title = "Estadísticas") {
                     DetailRow("CA", monster.armorClass?.firstOrNull()?.value?.toString() ?: "N/A")
@@ -241,7 +237,6 @@ fun MonsterDetailView(
                 }
             }
 
-            // Habilidades especiales
             if (!monster.specialAbilities.isNullOrEmpty()) {
                 item {
                     DetailCard(title = "Habilidades Especiales") {
@@ -262,7 +257,6 @@ fun MonsterDetailView(
                 }
             }
 
-            // Acciones
             if (!monster.actions.isNullOrEmpty()) {
                 item {
                     DetailCard(title = "Acciones") {

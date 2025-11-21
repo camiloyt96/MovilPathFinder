@@ -49,19 +49,16 @@ fun WikiScreen(
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Barra de búsqueda
             SearchBar(
                 query = uiState.searchQuery,
                 onQueryChange = { viewModel.searchSpells(it) }
             )
 
-            // Filtros de nivel
             SpellLevelFilters(
                 selectedLevel = uiState.selectedLevel,
                 onLevelSelected = { viewModel.filterByLevel(it) }
             )
 
-            // Contenido principal
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     uiState.isLoading -> {

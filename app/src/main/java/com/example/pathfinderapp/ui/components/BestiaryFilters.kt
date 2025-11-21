@@ -21,7 +21,6 @@ fun BestiaryFilters(
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
 
-        // --- Filtro por tamaño ---
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -44,7 +43,6 @@ fun BestiaryFilters(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // --- Filtro por tipo ---
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -67,7 +65,6 @@ fun BestiaryFilters(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // --- Filtro por CR ---
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

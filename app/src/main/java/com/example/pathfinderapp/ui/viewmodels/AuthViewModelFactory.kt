@@ -1,4 +1,3 @@
-// AuthViewModelFactory.kt
 package com.example.pathfinderapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
