@@ -1,7 +1,9 @@
 package com.example.pathfinderapp.data.models
 
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CharacterProfile(
     val id: String = UUID.randomUUID().toString(),
     val name: String,

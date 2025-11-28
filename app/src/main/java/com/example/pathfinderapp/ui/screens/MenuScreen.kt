@@ -2,6 +2,7 @@ package com.example.pathfinderapp.ui.screens
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,11 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.example.pathfinderapp.ui.components.MiniProfile
 import com.example.pathfinderapp.ui.components.ProfileInfoRow
 import java.io.File
-import androidx.core.content.FileProvider
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
@@ -34,31 +36,98 @@ fun MenuScreen(
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showPickerDialog by remember { mutableStateOf(false) }
     var profilePhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val context = LocalContext.current
 
+    // Launcher para la cámara
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
-    ) { success -> if (success) { /* uri ya en profilePhotoUri */ } }
+    ) { success ->
+        if (success && pendingCameraUri != null) {
+            profilePhotoUri = pendingCameraUri
+        }
+        pendingCameraUri = null
+    }
 
+    // Launcher para la galería
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
-    ) { uri -> profilePhotoUri = uri }
+    ) { uri ->
+        if (uri != null) {
+            profilePhotoUri = uri
+        }
+    }
 
+    // Launcher para permisos
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) {}
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            showPickerDialog = true
+        } else {
+            // Opcional: mostrar mensaje de error
+        }
+    }
 
-    fun pickImage() {
+    fun hasPermissions(): Boolean {
+        val cameraPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val storagePermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+
+        return cameraPermission && storagePermission
+    }
+
+    fun requestPermissions() {
         val permissions = mutableListOf<String>()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
         } else {
             permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
         permissions.add(Manifest.permission.CAMERA)
+
         permissionLauncher.launch(permissions.toTypedArray())
-        showPickerDialog = true
+    }
+
+    fun pickImage() {
+        if (hasPermissions()) {
+            showPickerDialog = true
+        } else {
+            requestPermissions()
+        }
+    }
+
+    fun openCamera() {
+        val photoFile = File(context.cacheDir, "photo_${System.currentTimeMillis()}.jpg")
+        val tempUri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            photoFile
+        )
+        pendingCameraUri = tempUri
+        cameraLauncher.launch(tempUri)
+    }
+
+    fun openGallery() {
+        galleryLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 
     Column(
@@ -141,19 +210,16 @@ fun MenuScreen(
             text = { Text("Elige de donde tomar la foto:") },
             confirmButton = {
                 TextButton(onClick = {
-                    galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     showPickerDialog = false
+                    openGallery()
                 }) {
                     Text("Galería")
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    val photoFile = File(context.cacheDir, "photo_${System.currentTimeMillis()}.jpg")
-                    val tempUri = FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
-                    profilePhotoUri = tempUri
-                    cameraLauncher.launch(tempUri)
                     showPickerDialog = false
+                    openCamera()
                 }) {
                     Text("Cámara")
                 }
