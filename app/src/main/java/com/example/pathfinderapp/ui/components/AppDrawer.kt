@@ -2,6 +2,7 @@ package com.example.pathfinderapp.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -88,7 +89,7 @@ private fun DrawerMenuItems(
 @Composable
 private fun DrawerLogoutButton(onLogoutClick: () -> Unit) {
     NavigationDrawerItem(
-        icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
+        icon = { Icon(Icons.AutoMirrored.Default.ExitToApp, contentDescription = null) },
         label = { Text("Cerrar Sesión") },
         selected = false,
         onClick = onLogoutClick,

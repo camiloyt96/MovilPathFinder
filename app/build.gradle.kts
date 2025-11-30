@@ -51,6 +51,22 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
 
+    // Testing básico
+    testImplementation("junit:junit:4.13.2")
+
+    // Kotlin test (recomendado para Kotlin)
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.20")
+
+    // Coroutines test (para probar código asíncrono)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // MockK (mocking library para Kotlin)
+    testImplementation("io.mockk:mockk:1.13.8")
+
+    // Para pruebas de UI (opcional)
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")

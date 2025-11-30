@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -180,7 +181,7 @@ fun MenuScreen(
             )
         ) {
             MenuOption(
-                icon = Icons.Default.ExitToApp,
+                icon = Icons.AutoMirrored.Default.ExitToApp,
                 title = "Cerrar Sesión",
                 description = "Salir de tu cuenta",
                 iconTint = MaterialTheme.colorScheme.error,
@@ -230,7 +231,7 @@ fun MenuScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            icon = { Icon(Icons.Default.ExitToApp, null, tint = MaterialTheme.colorScheme.error) },
+            icon = { Icon(Icons.AutoMirrored.Default.ExitToApp, null, tint = MaterialTheme.colorScheme.error) },
             title = { Text("¿Cerrar Sesión?") },
             text = { Text("¿Estás seguro que deseas salir?") },
             confirmButton = {
