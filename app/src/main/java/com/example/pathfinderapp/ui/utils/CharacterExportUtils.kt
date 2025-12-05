@@ -1,12 +1,12 @@
-package com.example.pathfinderapp.utils
+package com.example.pathfinderapp.ui.utils
 
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.example.pathfinderapp.data.models.CharacterProfile
-import org.json.JSONObject
 import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 
 object CharacterExportUtils {
@@ -22,7 +22,14 @@ object CharacterExportUtils {
                 put("race", JSONObject().apply {
                     put("name", character.race.name)
                     put("description", character.race.description)
-                    put("bonuses", JSONObject(character.race.bonuses))
+
+                    // Convertir bonuses manualmente
+                    val bonusesJson = JSONObject()
+                    character.race.bonuses.forEach { (key, value) ->
+                        bonusesJson.put(key, value)
+                    }
+                    put("bonuses", bonusesJson)
+
                     put("specialTraits", character.race.specialTraits)
                 })
 
@@ -43,7 +50,7 @@ object CharacterExportUtils {
                 })
             }
 
-            val result = json.toString(2) // Pretty print con indentación de 2 espacios
+            val result = json.toString(2)
             Log.d("CharacterExport", "JSON generado: ${result.length} chars")
             result
 
@@ -67,7 +74,14 @@ object CharacterExportUtils {
                     put("race", JSONObject().apply {
                         put("name", character.race.name)
                         put("description", character.race.description)
-                        put("bonuses", JSONObject(character.race.bonuses))
+
+                        // Convertir bonuses manualmente
+                        val bonusesJson = JSONObject()
+                        character.race.bonuses.forEach { (key, value) ->
+                            bonusesJson.put(key, value)
+                        }
+                        put("bonuses", bonusesJson)
+
                         put("specialTraits", character.race.specialTraits)
                     })
 

@@ -1,4 +1,4 @@
-    package com.example.pathfinderapp.viewmodels
+package com.example.pathfinderapp.ui.viewmodels
 
     import com.example.pathfinderapp.ui.screens.DiceType
     import com.example.pathfinderapp.ui.viewmodel.DiceViewModel
@@ -251,16 +251,20 @@
         fun `no se puede tirar el dado mientras esta rodando`() = runTest {
             // Given
             viewModel.selectDice(DiceType.D6)
+
+            // When - Primera tirada
             viewModel.rollDice(null)
             assertTrue(viewModel.isRolling.value)
 
-            // When - Intentar tirar de nuevo mientras está rodando
-            val historiaSizeAntes = viewModel.rollHistory.value.size
+            // Intentar segunda tirada inmediatamente
             viewModel.rollDice(null)
-            advanceTimeBy(100) // Avanzar un poco el tiempo
 
-            // Then - El historial no debe cambiar (no se ejecutó la segunda tirada)
-            assertEquals(historiaSizeAntes, viewModel.rollHistory.value.size)
+            // Avanzar TODO el tiempo
+            advanceUntilIdle()
+
+            // Then - Solo debe haber UNA tirada
+            assertEquals(1, viewModel.rollHistory.value.size)
+            assertFalse(viewModel.isRolling.value)
         }
 
         @Test

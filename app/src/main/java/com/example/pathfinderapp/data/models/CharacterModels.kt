@@ -9,7 +9,8 @@ data class CharacterProfile(
     val name: String,
     val race: Race,
     val characterClass: CharacterClass,
-    val stats: CharacterStats
+    val stats: CharacterStats,
+    val level: Int = 1
 )
 
 data class Race(

@@ -42,6 +42,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -63,6 +69,7 @@ dependencies {
     // MockK (mocking library para Kotlin)
     testImplementation("io.mockk:mockk:1.13.8")
 
+    testImplementation("org.json:json:20231013")
     // Para pruebas de UI (opcional)
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

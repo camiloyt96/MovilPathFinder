@@ -1,7 +1,6 @@
-package com.example.pathfinderapp.viewmodels
+package com.example.pathfinderapp.ui.viewmodels
 
 import com.example.pathfinderapp.data.models.Monster
-import com.example.pathfinderapp.ui.viewmodels.BestiaryViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

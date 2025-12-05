@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.pathfinderapp.data.models.CharacterProfile
 import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
-import com.example.pathfinderapp.utils.CharacterExportUtils
+import com.example.pathfinderapp.ui.utils.CharacterExportUtils
 
 @Composable
 fun CharactersListScreen(
