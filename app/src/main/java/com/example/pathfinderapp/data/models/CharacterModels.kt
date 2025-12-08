@@ -13,6 +13,7 @@ data class CharacterProfile(
     val level: Int = 1
 )
 
+@Serializable
 data class Race(
     val name: String,
     val description: String,
@@ -20,6 +21,7 @@ data class Race(
     val specialTraits: String
 )
 
+@Serializable
 data class CharacterClass(
     val name: String,
     val description: String,
@@ -27,6 +29,7 @@ data class CharacterClass(
     val primaryStats: String
 )
 
+@Serializable
 data class CharacterStats(
     val strength: Int = 10,
     val dexterity: Int = 10,

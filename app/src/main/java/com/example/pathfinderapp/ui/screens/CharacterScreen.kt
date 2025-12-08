@@ -30,6 +30,7 @@ import android.util.Log
 import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
 import com.example.pathfinderapp.ui.viewmodels.CharacterViewModelFactory
 
+
 @Composable
 fun CharacterScreen(
     viewModel: CharacterViewModel,

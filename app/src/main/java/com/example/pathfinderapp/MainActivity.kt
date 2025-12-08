@@ -9,8 +9,10 @@ import com.example.pathfinderapp.data.repository.FirebaseAppAuthRepository
 import com.example.pathfinderapp.ui.components.LoadingScreen
 import com.example.pathfinderapp.ui.navigation.AppNavigation
 import com.example.pathfinderapp.ui.theme.PathfinderAppTheme
+
 import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
 import com.example.pathfinderapp.ui.viewmodels.AuthViewModelFactory
+
 import com.example.pathfinderapp.ui.viewmodels.ThemeViewModel
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.delay

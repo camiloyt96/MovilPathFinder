@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.pathfinderapp.ui.navigation.NavGraph
 import com.example.pathfinderapp.ui.navigation.Screen
 import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
+import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
 import com.example.pathfinderapp.ui.viewmodels.User
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 fun AppScaffold(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    characterViewModel: CharacterViewModel, // ← AGREGA ESTE PARÁMETRO
     isAuthenticated: Boolean,
     currentUser: User?,
     isDarkMode: Boolean,
@@ -29,6 +31,7 @@ fun AppScaffold(
         AuthenticatedScaffold(
             navController = navController,
             authViewModel = authViewModel,
+            characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
             currentUser = currentUser,
             isDarkMode = isDarkMode,
             onThemeToggle = onThemeToggle
@@ -37,6 +40,7 @@ fun AppScaffold(
         UnauthenticatedScaffold(
             navController = navController,
             authViewModel = authViewModel,
+            characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
             isDarkMode = isDarkMode,
             onThemeToggle = onThemeToggle
         )
@@ -47,6 +51,7 @@ fun AppScaffold(
 fun UnauthenticatedScaffold(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    characterViewModel: CharacterViewModel, // ← AGREGA ESTE PARÁMETRO
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
 ) {
@@ -57,8 +62,9 @@ fun UnauthenticatedScaffold(
         NavGraph(
             navController = navController,
             authViewModel = authViewModel,
+            characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
             isDarkMode = isDarkMode,
-            onThemeToggle = onThemeToggle,
+            onThemeToggle = onThemeToggle
         )
     }
 }
@@ -68,6 +74,7 @@ fun UnauthenticatedScaffold(
 fun AuthenticatedScaffold(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    characterViewModel: CharacterViewModel, // ← AGREGA ESTE PARÁMETRO
     currentUser: User?,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
@@ -85,7 +92,7 @@ fun AuthenticatedScaffold(
             Screen.Wiki.route -> "Wiki"
             Screen.Dice.route -> "Dado D20"
             Screen.Characters.route -> "Mis Personajes"
-            Screen.Characters.route -> "Crear Personaje"
+            Screen.Character.route -> "Crear Personaje"
             Screen.Bestiary.route -> "Bestiario"
             Screen.Menu.route -> "Configuración"
             else -> "Pathfinder"
@@ -145,6 +152,7 @@ fun AuthenticatedScaffold(
                 NavGraph(
                     navController = navController,
                     authViewModel = authViewModel,
+                    characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
                     isDarkMode = isDarkMode,
                     onThemeToggle = onThemeToggle
                 )

@@ -1,7 +1,6 @@
 package com.example.pathfinderapp.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,20 +13,15 @@ import com.example.pathfinderapp.ui.viewmodels.AuthViewModel
 import com.example.pathfinderapp.ui.viewmodels.RegisterViewModel
 import com.example.pathfinderapp.ui.viewmodels.RegisterViewModelFactory
 import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
-import com.example.pathfinderapp.ui.viewmodels.CharacterViewModelFactory
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    characterViewModel: CharacterViewModel, // ← AGREGA ESTE PARÁMETRO
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
 ) {
-    val context = LocalContext.current
-    val characterViewModel: CharacterViewModel = viewModel(
-        factory = CharacterViewModelFactory(context)
-    )
-
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
@@ -73,7 +67,7 @@ fun NavGraph(
 
         composable(Screen.Characters.route) {
             CharactersListScreen(
-                viewModel = characterViewModel,
+                viewModel = characterViewModel, // ← USA EL PARÁMETRO
                 onCreateCharacter = {
                     navController.navigate(Screen.Character.route)
                 }
@@ -82,7 +76,7 @@ fun NavGraph(
 
         composable(Screen.Character.route) {
             CharacterScreen(
-                viewModel = characterViewModel,
+                viewModel = characterViewModel, // ← USA EL PARÁMETRO
                 onCharacterCreated = {
                     navController.popBackStack()
                 }
