@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 fun AppScaffold(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    characterViewModel: CharacterViewModel, // ← AGREGA ESTE PARÁMETRO
+    characterViewModel: CharacterViewModel,
     isAuthenticated: Boolean,
     currentUser: User?,
     isDarkMode: Boolean,
@@ -31,7 +31,7 @@ fun AppScaffold(
         AuthenticatedScaffold(
             navController = navController,
             authViewModel = authViewModel,
-            characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
+            characterViewModel = characterViewModel,
             currentUser = currentUser,
             isDarkMode = isDarkMode,
             onThemeToggle = onThemeToggle
@@ -40,7 +40,7 @@ fun AppScaffold(
         UnauthenticatedScaffold(
             navController = navController,
             authViewModel = authViewModel,
-            characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
+            characterViewModel = characterViewModel,
             isDarkMode = isDarkMode,
             onThemeToggle = onThemeToggle
         )
@@ -152,7 +152,7 @@ fun AuthenticatedScaffold(
                 NavGraph(
                     navController = navController,
                     authViewModel = authViewModel,
-                    characterViewModel = characterViewModel, // ← PÁSALO AQUÍ
+                    characterViewModel = characterViewModel,
                     isDarkMode = isDarkMode,
                     onThemeToggle = onThemeToggle
                 )

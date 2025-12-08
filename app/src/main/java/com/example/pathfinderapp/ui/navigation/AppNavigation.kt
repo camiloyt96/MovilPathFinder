@@ -22,7 +22,6 @@ fun AppNavigation(
     val authState by authViewModel.authState.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
 
-    // Crear CharacterViewModel aquí para compartirlo
     val context = LocalContext.current
     val characterViewModel: CharacterViewModel = viewModel(
         factory = CharacterViewModelFactory(context)
@@ -36,23 +35,18 @@ fun AppNavigation(
     AppScaffold(
         navController = navController,
         authViewModel = authViewModel,
-        characterViewModel = characterViewModel, // ← AGREGA ESTO
+        characterViewModel = characterViewModel,
         isAuthenticated = authState is AuthState.Authenticated,
         currentUser = currentUser,
         isDarkMode = isDarkMode,
         onThemeToggle = onThemeToggle
     )
 
-    // ← AQUÍ está la sincronización con Firebase
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
                 Log.d("AppNavigation", "Usuario autenticado, sincronizando personajes...")
-
-                // Sincronizar personajes locales con Firebase
                 characterViewModel.syncWithFirebase()
-
-                // Cargar personajes desde Firebase
                 characterViewModel.loadCharacters()
 
                 navController.navigate(Screen.Home.route) {
@@ -68,12 +62,4 @@ fun AppNavigation(
         }
     }
 
-    // Llamar a NavGraph y pasarle el characterViewModel
-    NavGraph(
-        navController = navController,
-        authViewModel = authViewModel,
-        characterViewModel = characterViewModel,
-        isDarkMode = isDarkMode,
-        onThemeToggle = onThemeToggle
-    )
 }

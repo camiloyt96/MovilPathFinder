@@ -18,7 +18,7 @@ import com.example.pathfinderapp.ui.viewmodels.CharacterViewModel
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    characterViewModel: CharacterViewModel, // ← AGREGA ESTE PARÁMETRO
+    characterViewModel: CharacterViewModel,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit
 ) {
