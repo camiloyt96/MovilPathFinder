@@ -53,7 +53,6 @@ class CharacterExportUtilsTest {
         )
     }
 
-    // ==================== PRUEBAS DE toJson ====================
 
     @Test
     fun `toJson genera JSON valido`() {
@@ -154,7 +153,6 @@ class CharacterExportUtilsTest {
         assertEquals(0, bonuses.length())
     }
 
-    // ==================== PRUEBAS DE toJsonList ====================
 
     @Test
     fun `toJsonList genera JSON array valido`() {
@@ -221,7 +219,6 @@ class CharacterExportUtilsTest {
         assertTrue(firstChar.has("stats"))
     }
 
-    // ==================== PRUEBAS DE MANEJO DE ERRORES ====================
 
     @Test
     fun `toJson con caracteres especiales en nombre`() {
@@ -252,13 +249,11 @@ class CharacterExportUtilsTest {
         assertEquals(1, stats.getInt("constitution"))
     }
 
-    // ==================== PRUEBAS DE FORMATO JSON ====================
 
     @Test
     fun `toJson genera JSON formateado con indentacion`() {
         val result = CharacterExportUtils.toJson(testCharacter)
 
-        // Verificar que tiene saltos de línea (pretty print)
         assertTrue(result.contains("\n"))
     }
 
@@ -267,11 +262,9 @@ class CharacterExportUtilsTest {
         val characters = listOf(testCharacter)
         val result = CharacterExportUtils.toJsonList(characters)
 
-        // Verificar que tiene saltos de línea (pretty print)
         assertTrue(result.contains("\n"))
     }
 
-    // ==================== PRUEBAS DE INTEGRIDAD DE DATOS ====================
 
     @Test
     fun `toJson preserva todos los campos sin perdida de datos`() {
@@ -291,7 +284,6 @@ class CharacterExportUtilsTest {
         val originalJson = CharacterExportUtils.toJson(testCharacter)
         val parsedJson = JSONObject(originalJson)
 
-        // Verificar que se puede parsear de vuelta y mantiene los datos
         assertEquals(testCharacter.id, parsedJson.getString("id"))
         assertEquals(testCharacter.name, parsedJson.getString("name"))
 
@@ -308,7 +300,6 @@ class CharacterExportUtilsTest {
         val result = CharacterExportUtils.toJsonList(characters)
         val jsonArray = JSONArray(result)
 
-        // Verificar que ambos elementos tienen la misma estructura
         val char1 = jsonArray.getJSONObject(0)
         val char2 = jsonArray.getJSONObject(1)
 
